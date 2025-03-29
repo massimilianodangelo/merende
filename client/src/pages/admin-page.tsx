@@ -400,68 +400,157 @@ export default function AdminPage() {
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   </div>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Cliente</TableHead>
-                        <TableHead>Classe</TableHead>
-                        <TableHead>Stato</TableHead>
-                        <TableHead>Totale</TableHead>
-                        <TableHead>Data Ordine</TableHead>
-                        <TableHead className="text-right">Azioni</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {orders?.map(order => (
-                        <TableRow key={order.id}>
-                          <TableCell className="font-medium">#{order.id}</TableCell>
-                          <TableCell>{order.user.firstName} {order.user.lastName}</TableCell>
-                          <TableCell>{order.user.classRoom}</TableCell>
-                          <TableCell>
-                            {order.status === OrderStatus.PENDING && <span className="text-yellow-600">In Attesa</span>}
-                            {order.status === OrderStatus.PROCESSING && <span className="text-blue-600">In Preparazione</span>}
-                            {order.status === OrderStatus.COMPLETED && <span className="text-green-600">Completato</span>}
-                            {order.status === OrderStatus.CANCELLED && <span className="text-red-600">Annullato</span>}
-                          </TableCell>
-                          <TableCell>{formatCurrency(order.total)}</TableCell>
-                          <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end space-x-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200"
-                                onClick={() => handleViewOrderDetails(order)}
-                              >
-                                Dettagli
-                              </Button>
-                              {order.status === OrderStatus.PENDING && (
-                                <>
+                  <div className="space-y-8">
+                    {/* Ordini in attesa */}
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4 pb-2 border-b">Ordini in Attesa</h3>
+                      {orders?.filter(order => order.status === OrderStatus.PENDING).length === 0 ? (
+                        <div className="text-center py-4 text-gray-500">
+                          Nessun ordine in attesa
+                        </div>
+                      ) : (
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>ID</TableHead>
+                              <TableHead>Cliente</TableHead>
+                              <TableHead>Classe</TableHead>
+                              <TableHead>Totale</TableHead>
+                              <TableHead>Data Ordine</TableHead>
+                              <TableHead className="text-right">Azioni</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {orders?.filter(order => order.status === OrderStatus.PENDING).map(order => (
+                              <TableRow key={order.id}>
+                                <TableCell className="font-medium">#{order.id}</TableCell>
+                                <TableCell>{order.user.firstName} {order.user.lastName}</TableCell>
+                                <TableCell>{order.user.classRoom}</TableCell>
+                                <TableCell>{formatCurrency(order.total)}</TableCell>
+                                <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
+                                <TableCell className="text-right">
+                                  <div className="flex justify-end space-x-2">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200"
+                                      onClick={() => handleViewOrderDetails(order)}
+                                    >
+                                      Dettagli
+                                    </Button>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="bg-green-50 text-green-600 hover:bg-green-100 border-green-200"
+                                      onClick={() => handleViewOrderDetails(order)}
+                                    >
+                                      <Check className="h-4 w-4 mr-1" /> Accetta
+                                    </Button>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
+                                      onClick={() => handleViewOrderDetails(order)}
+                                    >
+                                      <X className="h-4 w-4 mr-1" /> Rifiuta
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </div>
+
+                    {/* Ordini completati */}
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4 pb-2 border-b">Ordini Completati</h3>
+                      {orders?.filter(order => order.status === OrderStatus.COMPLETED).length === 0 ? (
+                        <div className="text-center py-4 text-gray-500">
+                          Nessun ordine completato
+                        </div>
+                      ) : (
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>ID</TableHead>
+                              <TableHead>Cliente</TableHead>
+                              <TableHead>Classe</TableHead>
+                              <TableHead>Totale</TableHead>
+                              <TableHead>Data Ordine</TableHead>
+                              <TableHead className="text-right">Azioni</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {orders?.filter(order => order.status === OrderStatus.COMPLETED).map(order => (
+                              <TableRow key={order.id}>
+                                <TableCell className="font-medium">#{order.id}</TableCell>
+                                <TableCell>{order.user.firstName} {order.user.lastName}</TableCell>
+                                <TableCell>{order.user.classRoom}</TableCell>
+                                <TableCell>{formatCurrency(order.total)}</TableCell>
+                                <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
+                                <TableCell className="text-right">
                                   <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="bg-green-50 text-green-600 hover:bg-green-100 border-green-200"
+                                    className="bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200"
                                     onClick={() => handleViewOrderDetails(order)}
                                   >
-                                    <Check className="h-4 w-4 mr-1" /> Accetta
+                                    Dettagli
                                   </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </div>
+
+                    {/* Ordini annullati */}
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4 pb-2 border-b">Ordini Annullati</h3>
+                      {orders?.filter(order => order.status === OrderStatus.CANCELLED).length === 0 ? (
+                        <div className="text-center py-4 text-gray-500">
+                          Nessun ordine annullato
+                        </div>
+                      ) : (
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>ID</TableHead>
+                              <TableHead>Cliente</TableHead>
+                              <TableHead>Classe</TableHead>
+                              <TableHead>Totale</TableHead>
+                              <TableHead>Data Ordine</TableHead>
+                              <TableHead className="text-right">Azioni</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {orders?.filter(order => order.status === OrderStatus.CANCELLED).map(order => (
+                              <TableRow key={order.id}>
+                                <TableCell className="font-medium">#{order.id}</TableCell>
+                                <TableCell>{order.user.firstName} {order.user.lastName}</TableCell>
+                                <TableCell>{order.user.classRoom}</TableCell>
+                                <TableCell>{formatCurrency(order.total)}</TableCell>
+                                <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
+                                <TableCell className="text-right">
                                   <Button 
                                     variant="outline" 
                                     size="sm" 
-                                    className="bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
+                                    className="bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200"
                                     onClick={() => handleViewOrderDetails(order)}
                                   >
-                                    <X className="h-4 w-4 mr-1" /> Rifiuta
+                                    Dettagli
                                   </Button>
-                                </>
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </div>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -627,7 +716,20 @@ export default function AdminPage() {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {Object.entries(ordersByClass).map(([classRoom, classOrders]) => (
+                    {Object.entries(ordersByClass)
+                      .sort(([classRoomA], [classRoomB]) => {
+                        // Estrai numeri e lettere dalla classe (es. 1A -> [1, "A"])
+                        const [numA, letterA] = [parseInt(classRoomA.match(/\d+/)?.[0] || "0"), classRoomA.match(/[A-Z]+/)?.[0] || ""];
+                        const [numB, letterB] = [parseInt(classRoomB.match(/\d+/)?.[0] || "0"), classRoomB.match(/[A-Z]+/)?.[0] || ""];
+                        
+                        // Prima ordina per numero
+                        if (numA !== numB) {
+                          return numA - numB;
+                        }
+                        // Se i numeri sono uguali, ordina per lettera
+                        return letterA.localeCompare(letterB);
+                      })
+                      .map(([classRoom, classOrders]) => (
                       <div key={classRoom} className="border rounded-lg p-4">
                         <h3 className="text-lg font-semibold mb-2">Classe {classRoom}</h3>
                         <div className="text-sm text-gray-500 mb-4">
