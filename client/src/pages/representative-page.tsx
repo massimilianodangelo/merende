@@ -371,18 +371,12 @@ export default function RepresentativePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <Tabs defaultValue={OrderStatus.PENDING} className="w-full">
-            <TabsList className="grid grid-cols-4 mb-6">
+            <TabsList className="grid grid-cols-2 mb-6">
               <TabsTrigger value={OrderStatus.PENDING}>
                 In attesa
               </TabsTrigger>
-              <TabsTrigger value={OrderStatus.PROCESSING}>
-                In preparazione
-              </TabsTrigger>
               <TabsTrigger value={OrderStatus.COMPLETED}>
                 Completati
-              </TabsTrigger>
-              <TabsTrigger value={OrderStatus.CANCELLED}>
-                Annullati
               </TabsTrigger>
             </TabsList>
 
@@ -390,16 +384,8 @@ export default function RepresentativePage() {
               <OrdersList status={OrderStatus.PENDING} />
             </TabsContent>
             
-            <TabsContent value={OrderStatus.PROCESSING}>
-              <OrdersList status={OrderStatus.PROCESSING} />
-            </TabsContent>
-            
             <TabsContent value={OrderStatus.COMPLETED}>
               <OrdersList status={OrderStatus.COMPLETED} />
-            </TabsContent>
-            
-            <TabsContent value={OrderStatus.CANCELLED}>
-              <OrdersList status={OrderStatus.CANCELLED} />
             </TabsContent>
           </Tabs>
         </div>

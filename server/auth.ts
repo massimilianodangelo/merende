@@ -22,17 +22,24 @@ async function hashPassword(password: string) {
 }
 
 async function comparePasswords(supplied: string, stored: string) {
+  // Aggiunge log per debug
+  console.log(`Comparing password for admin check. Stored contains salt: ${stored.includes("c0ffee12deadbeef34abcd5678")}`);
+  
   // Se l'utente è l'amministratore con password fissa, usa un metodo speciale
   if (stored.includes("c0ffee12deadbeef34abcd5678")) {
     const [hashed, salt] = stored.split(".");
+    console.log("Admin login attempt, using SHA-256");
     // Usa lo stesso algoritmo usato per creare la password admin
     const crypto = await import('crypto');
     const suppliedHash = crypto.createHash('sha256').update(supplied + salt).digest('hex');
-    return suppliedHash === hashed;
+    const match = suppliedHash === hashed;
+    console.log(`Admin password match: ${match}`);
+    return match;
   }
 
   // Altrimenti usa il metodo normale con scrypt
   try {
+    console.log("Normal user login attempt, using scrypt");
     const [hashed, salt] = stored.split(".");
     if (!salt) {
       console.error("Password format error: missing salt");
