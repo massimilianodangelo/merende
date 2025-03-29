@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { insertOrderSchema, insertOrderItemSchema, CartItem } from "@shared/schema";
+import { insertOrderSchema, insertOrderItemSchema, insertProductSchema, CartItem } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -41,6 +41,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching product:", error);
       res.status(500).json({ message: "Failed to fetch product" });
+    }
+  });
+
+  app.post("/api/products", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Solo l'amministratore può aggiungere prodotti
+      if (!req.user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      // Validare i dati del prodotto
+      const productData = {
+        name: req.body.name,
+        description: req.body.description,
+        price: req.body.price,
+        category: req.body.category,
+        available: req.body.available !== undefined ? req.body.available : true
+      };
+      
+      const validatedProductData = insertProductSchema.parse(productData);
+      
+      // Creare il prodotto
+      const product = await storage.createProduct(validatedProductData);
+      
+      res.status(200).json(product);
+    } catch (error) {
+      console.error("Error creating product:", error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid product data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to create product" });
+      }
     }
   });
 

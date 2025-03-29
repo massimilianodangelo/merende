@@ -210,11 +210,15 @@ export default function RepresentativePage() {
               <p className="text-sm text-gray-500">Stato Ordine</p>
               <Badge
                 className={`${
-                  selectedOrder ? orderStatusColors[selectedOrder.status] : ""
+                  selectedOrder && Object.prototype.hasOwnProperty.call(orderStatusColors, selectedOrder.status)
+                    ? orderStatusColors[selectedOrder.status as keyof typeof orderStatusColors]
+                    : "bg-gray-100 text-gray-800"
                 } flex items-center`}
               >
                 {selectedOrder && <OrderStatusIcon status={selectedOrder.status} />}
-                {selectedOrder && orderStatusTranslations[selectedOrder.status as keyof typeof orderStatusTranslations]}
+                {selectedOrder && Object.prototype.hasOwnProperty.call(orderStatusTranslations, selectedOrder.status)
+                  ? orderStatusTranslations[selectedOrder.status as keyof typeof orderStatusTranslations]
+                  : selectedOrder?.status}
               </Badge>
             </div>
             <div>
@@ -274,7 +278,13 @@ export default function RepresentativePage() {
 
   // Componente per la lista degli ordini
   const OrdersList = ({ status }: { status: string }) => {
+    // Assicurati che ordersByStatus contenga la proprietà status, se non c'è, inizializza come array vuoto
     const filteredOrders = ordersByStatus[status] || [];
+    
+    // Usiamo il valore sicuro per la traduzione
+    const statusTranslation = Object.prototype.hasOwnProperty.call(orderStatusTranslations, status) 
+      ? orderStatusTranslations[status as keyof typeof orderStatusTranslations]
+      : status;
     
     return (
       <div className="space-y-4">
@@ -288,11 +298,15 @@ export default function RepresentativePage() {
                   </CardTitle>
                   <Badge
                     className={`${
-                      orderStatusColors[order.status]
+                      Object.prototype.hasOwnProperty.call(orderStatusColors, order.status)
+                        ? orderStatusColors[order.status as keyof typeof orderStatusColors]
+                        : "bg-gray-100 text-gray-800"
                     } flex items-center`}
                   >
                     <OrderStatusIcon status={order.status} />
-                    {orderStatusTranslations[order.status as keyof typeof orderStatusTranslations]}
+                    {Object.prototype.hasOwnProperty.call(orderStatusTranslations, order.status)
+                      ? orderStatusTranslations[order.status as keyof typeof orderStatusTranslations]
+                      : order.status}
                   </Badge>
                 </div>
                 <CardDescription>
@@ -328,7 +342,7 @@ export default function RepresentativePage() {
           ))
         ) : (
           <div className="text-center py-8 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">Nessun ordine {orderStatusTranslations[status as keyof typeof orderStatusTranslations].toLowerCase()}</p>
+            <p className="text-gray-500">Nessun ordine {statusTranslation.toLowerCase()}</p>
           </div>
         )}
       </div>
