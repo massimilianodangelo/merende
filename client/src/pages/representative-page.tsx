@@ -82,11 +82,11 @@ export default function RepresentativePage() {
   const [selectedOrder, setSelectedOrder] = useState<OrderWithDetails | null>(null);
   const [orderDetailsOpen, setOrderDetailsOpen] = useState(false);
 
-  // Fetch degli ordini filtrati per classe del rappresentante
+  // Fetch degli ordini per la classe del rappresentante
   const { data: orders, isLoading, error } = useQuery({
-    queryKey: ["/api/orders/by-class", user?.classRoom, selectedDate],
+    queryKey: ["/api/admin/orders/class", user?.classRoom, selectedDate],
     queryFn: async () => {
-      const res = await fetch(`/api/orders/by-class/${user?.classRoom}?date=${selectedDate}`);
+      const res = await fetch(`/api/admin/orders/class/${user?.classRoom}`);
       if (!res.ok) throw new Error("Errore nel caricamento degli ordini");
       return res.json();
     },

@@ -171,9 +171,24 @@ export class MemStorage implements IStorage {
 
   // Crea l'utente amministratore predefinito
   private async createAdminUser() {
+    // Verifica se l'utente amministratore esiste già
+    const existingAdmin = await this.getUserByUsername("prova@amministratore.it");
+    if (existingAdmin) {
+      console.log("Utente amministratore già esistente:", existingAdmin.username);
+      return;
+    }
+    
+    // Genera l'hash della password usando una funzione sincrona
+    // per evitare problemi di await
+    const salt = "c0ffee12deadbeef34abcd5678";
+    const password = "Prova2025!";
+    // Usa il modulo crypto importato in modo corretto
+    const crypto = await import('crypto');
+    const hashedPassword = crypto.createHash('sha256').update(password + salt).digest('hex') + "." + salt;
+    
     const adminUser: InsertUser = {
       username: "prova@amministratore.it",
-      password: "Prova2025!",
+      password: hashedPassword, // Password con hash
       firstName: "Admin",
       lastName: "System",
       classRoom: "Admin",

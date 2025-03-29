@@ -22,10 +22,29 @@ async function hashPassword(password: string) {
 }
 
 async function comparePasswords(supplied: string, stored: string) {
-  const [hashed, salt] = stored.split(".");
-  const hashedBuf = Buffer.from(hashed, "hex");
-  const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-  return timingSafeEqual(hashedBuf, suppliedBuf);
+  // Se l'utente è l'amministratore con password fissa, usa un metodo speciale
+  if (stored.includes("c0ffee12deadbeef34abcd5678")) {
+    const [hashed, salt] = stored.split(".");
+    // Usa lo stesso algoritmo usato per creare la password admin
+    const crypto = await import('crypto');
+    const suppliedHash = crypto.createHash('sha256').update(supplied + salt).digest('hex');
+    return suppliedHash === hashed;
+  }
+
+  // Altrimenti usa il metodo normale con scrypt
+  try {
+    const [hashed, salt] = stored.split(".");
+    if (!salt) {
+      console.error("Password format error: missing salt");
+      return false;
+    }
+    const hashedBuf = Buffer.from(hashed, "hex");
+    const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
+    return timingSafeEqual(hashedBuf, suppliedBuf);
+  } catch (err) {
+    console.error("Error comparing passwords:", err);
+    return false;
+  }
 }
 
 export function setupAuth(app: Express) {
@@ -105,7 +124,8 @@ export function setupAuth(app: Express) {
       firstName: user.firstName,
       lastName: user.lastName,
       classRoom: user.classRoom,
-      isRepresentative: user.isRepresentative
+      isRepresentative: user.isRepresentative,
+      isAdmin: user.isAdmin
     });
   });
 
@@ -126,7 +146,8 @@ export function setupAuth(app: Express) {
       firstName: user.firstName,
       lastName: user.lastName,
       classRoom: user.classRoom,
-      isRepresentative: user.isRepresentative
+      isRepresentative: user.isRepresentative,
+      isAdmin: user.isAdmin
     });
   });
 }
