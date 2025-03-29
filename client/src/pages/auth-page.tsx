@@ -39,6 +39,7 @@ const registerSchema = z.object({
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState<string>("login");
+  const [isRepresentative, setIsRepresentative] = useState(false);
   const { user, loginMutation, registerMutation } = useAuth();
   const [_, navigate] = useLocation();
   
@@ -88,7 +89,9 @@ export default function AuthPage() {
       lastName: data.lastName,
       classRoom: data.classRoom,
       username: data.username,
+      email: data.username, // Usiamo l'username (email) come email
       password: data.password,
+      isRepresentative: isRepresentative
     });
   }
 
@@ -324,6 +327,20 @@ export default function AuthPage() {
                         </div>
                       )}
                     />
+                    
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="isRepresentative"
+                        checked={isRepresentative}
+                        onCheckedChange={(checked) => setIsRepresentative(!!checked)}
+                      />
+                      <label
+                        htmlFor="isRepresentative"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Sono un rappresentante di classe
+                      </label>
+                    </div>
                     
                     <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
                       {registerMutation.isPending ? (

@@ -180,10 +180,20 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userId++;
     
-    // Imposta rappresentante di classe se l'email termina con @rappresentante.it
-    const isRepresentative = insertUser.email?.endsWith('@rappresentante.it') || false;
+    // Controlla se è un amministratore basato sull'email
+    const isAdmin = insertUser.email === 'prova@amministratore.it';
     
-    const user: User = { ...insertUser, id, isRepresentative };
+    // Per ora mantengo la possibilità di diventare rappresentante tramite checkbox
+    // nella form di registrazione
+    const isRepresentative = !!insertUser.isRepresentative;
+    
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      isRepresentative, 
+      isAdmin 
+    };
+    
     this.users.set(id, user);
     return user;
   }

@@ -12,11 +12,11 @@ export const users = pgTable("users", {
   classRoom: text("class_room").notNull(),
   email: text("email").notNull(),
   isRepresentative: boolean("is_representative").default(false),
+  isAdmin: boolean("is_admin").default(false),
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
-  isRepresentative: true,
 });
 
 // Product model

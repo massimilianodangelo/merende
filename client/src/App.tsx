@@ -7,15 +7,17 @@ import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import MyOrdersPage from "@/pages/my-orders-page";
 import AdminPage from "@/pages/admin-page";
+import RepresentativePage from "@/pages/representative-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { CartProvider } from "@/hooks/use-cart";
-import { ProtectedRoute, AdminRoute } from "@/lib/protected-route";
+import { ProtectedRoute, AdminRoute, RepresentativeRoute } from "@/lib/protected-route";
 
 function Router() {
   return (
     <Switch>
       <ProtectedRoute path="/" component={HomePage} />
       <ProtectedRoute path="/my-orders" component={MyOrdersPage} />
+      <RepresentativeRoute path="/representative" component={RepresentativePage} />
       <AdminRoute path="/admin" component={AdminPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
