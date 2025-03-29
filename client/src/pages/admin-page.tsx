@@ -73,13 +73,17 @@ export default function AdminPage() {
   const { user, logoutMutation } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<OrderWithDetails | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [classFilter, setClassFilter] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Fetch admin orders
+  // Fetch admin orders (filtered by class if classFilter is set)
   const { data: orders, isLoading, isError, refetch } = useQuery<OrderWithDetails[]>({
-    queryKey: ["/api/admin/orders"],
+    queryKey: classFilter ? [`/api/admin/orders/class/${classFilter}`] : ["/api/admin/orders"],
     queryFn: async () => {
-      const res = await fetch("/api/admin/orders");
+      const endpoint = classFilter 
+        ? `/api/admin/orders/class/${classFilter}`
+        : "/api/admin/orders";
+      const res = await fetch(endpoint);
       if (!res.ok) throw new Error("Failed to fetch admin orders");
       return res.json();
     }
@@ -96,7 +100,12 @@ export default function AdminPage() {
         title: "Stato aggiornato",
         description: "Lo stato dell'ordine è stato aggiornato con successo.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      // Invalida tutte le query relative agli ordini, inclusi quelli filtrati per classe
+      if (classFilter) {
+        queryClient.invalidateQueries({ queryKey: [`/api/admin/orders/class/${classFilter}`] });
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      }
     },
     onError: (error: Error) => {
       toast({
@@ -281,20 +290,47 @@ export default function AdminPage() {
               )}
               
               {!selectedOrder && (
-                <div className="flex items-center">
-                  <Filter className="h-4 w-4 mr-2 text-gray-500" />
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Filtra per stato" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tutti gli stati</SelectItem>
-                      <SelectItem value="pending">In attesa</SelectItem>
-                      <SelectItem value="processing">In preparazione</SelectItem>
-                      <SelectItem value="completed">Completati</SelectItem>
-                      <SelectItem value="cancelled">Annullati</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center">
+                    <Filter className="h-4 w-4 mr-2 text-gray-500" />
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Filtra per stato" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tutti gli stati</SelectItem>
+                        <SelectItem value="pending">In attesa</SelectItem>
+                        <SelectItem value="processing">In preparazione</SelectItem>
+                        <SelectItem value="completed">Completati</SelectItem>
+                        <SelectItem value="cancelled">Annullati</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <Clipboard className="h-4 w-4 mr-2 text-gray-500" />
+                    <Select 
+                      value={classFilter || ""} 
+                      onValueChange={(value) => setClassFilter(value === "" ? null : value)}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Filtra per classe" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Tutte le classi</SelectItem>
+                        <SelectItem value="1A">1A</SelectItem>
+                        <SelectItem value="1B">1B</SelectItem>
+                        <SelectItem value="2A">2A</SelectItem>
+                        <SelectItem value="2B">2B</SelectItem>
+                        <SelectItem value="3A">3A</SelectItem>
+                        <SelectItem value="3B">3B</SelectItem>
+                        <SelectItem value="4A">4A</SelectItem>
+                        <SelectItem value="4B">4B</SelectItem>
+                        <SelectItem value="5A">5A</SelectItem>
+                        <SelectItem value="5B">5B</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               )}
               

@@ -21,6 +21,7 @@ export interface IStorage {
   getOrders(): Promise<Order[]>;
   getOrdersByUser(userId: number): Promise<Order[]>;
   getOrdersByDate(date: Date): Promise<Order[]>;
+  getOrdersByClass(classroom: string): Promise<Order[]>;
   getOrderById(id: number): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrderStatus(id: number, status: string): Promise<Order | undefined>;
@@ -178,7 +179,11 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userId++;
-    const user: User = { ...insertUser, id, isRepresentative: false };
+    
+    // Imposta rappresentante di classe se l'email termina con @rappresentante.it
+    const isRepresentative = insertUser.email?.endsWith('@rappresentante.it') || false;
+    
+    const user: User = { ...insertUser, id, isRepresentative };
     this.users.set(id, user);
     return user;
   }
@@ -236,6 +241,21 @@ export class MemStorage implements IStorage {
       const orderDate = new Date(order.orderDate.toDateString());
       return orderDate.getTime() === targetDate.getTime();
     });
+  }
+  
+  async getOrdersByClass(classroom: string): Promise<Order[]> {
+    const orders = Array.from(this.orders.values());
+    const result: Order[] = [];
+    
+    // Per ogni ordine, ottieni l'utente e verifica la classe
+    for (const order of orders) {
+      const user = this.users.get(order.userId);
+      if (user && user.classRoom === classroom) {
+        result.push(order);
+      }
+    }
+    
+    return result;
   }
 
   async getOrderById(id: number): Promise<Order | undefined> {

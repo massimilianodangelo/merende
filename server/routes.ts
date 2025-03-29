@@ -170,6 +170,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch admin orders" });
     }
   });
+  
+  // Ottieni ordini per classe (solo per rappresentanti di classe)
+  app.get("/api/admin/orders/class/:classroom", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Check if user is a representative
+      if (!req.user?.isRepresentative) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const classroom = req.params.classroom;
+      const orders = await storage.getOrdersByClass(classroom);
+      
+      // Aggiunge i dettagli degli item e utente all'ordine
+      const ordersWithDetails = await Promise.all(
+        orders.map(async (order) => {
+          const items = await storage.getOrderItems(order.id);
+          const user = await storage.getUser(order.userId);
+          return { 
+            ...order, 
+            items,
+            user: user ? {
+              id: user.id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              classRoom: user.classRoom
+            } : null
+          };
+        })
+      );
+      
+      res.json(ordersWithDetails);
+    } catch (error) {
+      console.error("Error fetching class orders:", error);
+      res.status(500).json({ message: "Failed to fetch class orders" });
+    }
+  });
 
   app.patch("/api/admin/orders/:id/status", async (req, res) => {
     try {

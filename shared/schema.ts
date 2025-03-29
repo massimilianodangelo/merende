@@ -10,6 +10,7 @@ export const users = pgTable("users", {
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   classRoom: text("class_room").notNull(),
+  email: text("email").notNull(),
   isRepresentative: boolean("is_representative").default(false),
 });
 
