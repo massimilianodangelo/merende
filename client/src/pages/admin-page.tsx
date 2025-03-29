@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { getInitials, formatCurrency } from "@/lib/utils";
 import { 
@@ -9,10 +9,24 @@ import {
   ShoppingBag,
   Package,
   Users,
+  Check,
+  X,
+  Plus,
   Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   Table, 
   TableBody, 
@@ -29,13 +43,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Product as ProductType,
   ProductCategories,
-  OrderStatus
+  OrderStatus,
+  InsertProduct
 } from "@shared/schema";
 
 // Tipo per gli ordini con dettagli
@@ -71,6 +94,20 @@ export default function AdminPage() {
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<string>("dashboard");
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [newProduct, setNewProduct] = useState<{
+    name: string;
+    description: string;
+    price: string;
+    category: string;
+    available: boolean;
+  }>({
+    name: "",
+    description: "",
+    price: "",
+    category: Object.values(ProductCategories)[0],
+    available: true
+  });
 
   // Fetch products
   const { data: products, isLoading: isLoadingProducts } = useQuery<ProductType[]>({
@@ -81,6 +118,97 @@ export default function AdminPage() {
   const { data: orders, isLoading: isLoadingOrders } = useQuery<OrderWithDetails[]>({
     queryKey: ["/api/admin/orders"],
   });
+
+  // Mutation for updating order status
+  const updateOrderStatusMutation = useMutation({
+    mutationFn: async ({ orderId, status }: { orderId: number, status: string }) => {
+      const res = await apiRequest("PATCH", `/api/admin/orders/${orderId}/status`, { status });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      toast({
+        title: "Stato ordine aggiornato",
+        description: "Lo stato dell'ordine è stato modificato con successo.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'aggiornamento dello stato dell'ordine.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Mutation for adding new product
+  const addProductMutation = useMutation({
+    mutationFn: async (productData: InsertProduct) => {
+      const res = await apiRequest("POST", "/api/products", productData);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      setIsAddProductOpen(false);
+      setNewProduct({
+        name: "",
+        description: "",
+        price: "",
+        category: Object.values(ProductCategories)[0],
+        available: true
+      });
+      toast({
+        title: "Prodotto aggiunto",
+        description: "Il nuovo prodotto è stato aggiunto con successo.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'aggiunta del nuovo prodotto.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleAcceptOrder = (orderId: number) => {
+    updateOrderStatusMutation.mutate({ orderId, status: OrderStatus.COMPLETED });
+  };
+
+  const handleRejectOrder = (orderId: number) => {
+    updateOrderStatusMutation.mutate({ orderId, status: OrderStatus.CANCELLED });
+  };
+
+  const handleAddProduct = () => {
+    if (!newProduct.name || !newProduct.description || !newProduct.price || !newProduct.category) {
+      toast({
+        title: "Errore",
+        description: "Tutti i campi sono obbligatori.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const price = parseFloat(newProduct.price);
+    if (isNaN(price) || price <= 0) {
+      toast({
+        title: "Errore",
+        description: "Il prezzo deve essere un numero valido maggiore di zero.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const productData: InsertProduct = {
+      name: newProduct.name,
+      description: newProduct.description,
+      price: price,
+      category: newProduct.category,
+      available: newProduct.available
+    };
+
+    addProductMutation.mutate(productData);
+  };
 
   const handleLogout = () => {
     logoutMutation.mutate();
@@ -284,9 +412,33 @@ export default function AdminPage() {
                           <TableCell>{formatCurrency(order.total)}</TableCell>
                           <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
                           <TableCell className="text-right">
-                            <Button variant="outline" size="sm">
-                              <Settings className="h-4 w-4 mr-1" /> Gestisci
-                            </Button>
+                            {order.status === OrderStatus.PENDING && (
+                              <div className="flex justify-end space-x-2">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="bg-green-50 text-green-600 hover:bg-green-100 border-green-200"
+                                  onClick={() => handleAcceptOrder(order.id)}
+                                >
+                                  <Check className="h-4 w-4 mr-1" /> Accetta
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
+                                  onClick={() => handleRejectOrder(order.id)}
+                                >
+                                  <X className="h-4 w-4 mr-1" /> Rifiuta
+                                </Button>
+                              </div>
+                            )}
+                            {order.status !== OrderStatus.PENDING && (
+                              <span className="text-gray-500 text-sm">
+                                {order.status === OrderStatus.COMPLETED ? "Accettato" : 
+                                 order.status === OrderStatus.CANCELLED ? "Rifiutato" : 
+                                 order.status === OrderStatus.PROCESSING ? "In lavorazione" : ""}
+                              </span>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -302,9 +454,100 @@ export default function AdminPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Gestione Prodotti</CardTitle>
-                <Button size="sm">
-                  <Package className="h-4 w-4 mr-1" /> Nuovo Prodotto
-                </Button>
+                <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm">
+                      <Plus className="h-4 w-4 mr-1" /> Nuovo Prodotto
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Aggiungi Nuovo Prodotto</DialogTitle>
+                      <DialogDescription>
+                        Inserisci i dettagli del nuovo prodotto da aggiungere al catalogo.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                          Nome
+                        </Label>
+                        <Input
+                          id="name"
+                          value={newProduct.name}
+                          onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="description" className="text-right">
+                          Descrizione
+                        </Label>
+                        <Input
+                          id="description"
+                          value={newProduct.description}
+                          onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="price" className="text-right">
+                          Prezzo (€)
+                        </Label>
+                        <Input
+                          id="price"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={newProduct.price}
+                          onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="category" className="text-right">
+                          Categoria
+                        </Label>
+                        <Select 
+                          value={newProduct.category} 
+                          onValueChange={(value) => setNewProduct({ ...newProduct, category: value })}
+                        >
+                          <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Seleziona una categoria" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.values(ProductCategories).map((category) => (
+                              <SelectItem key={category} value={category}>
+                                {category}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="available" className="text-right">
+                          Disponibile
+                        </Label>
+                        <div className="flex items-center space-x-2 col-span-3">
+                          <Switch
+                            id="available"
+                            checked={newProduct.available}
+                            onCheckedChange={(checked) => setNewProduct({ ...newProduct, available: checked })}
+                          />
+                          <Label htmlFor="available" className="cursor-pointer">
+                            {newProduct.available ? "Sì" : "No"}
+                          </Label>
+                        </div>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button type="submit" onClick={handleAddProduct} disabled={addProductMutation.isPending}>
+                        {addProductMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Aggiungi Prodotto
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardHeader>
               <CardContent>
                 {isLoadingProducts ? (
@@ -338,9 +581,7 @@ export default function AdminPage() {
                             )}
                           </TableCell>
                           <TableCell className="text-right space-x-2">
-                            <Button variant="outline" size="sm">
-                              <Settings className="h-4 w-4 mr-1" /> Modifica
-                            </Button>
+                            <span className="text-sm text-gray-500">ID: #{product.id}</span>
                           </TableCell>
                         </TableRow>
                       ))}
