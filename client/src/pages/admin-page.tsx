@@ -95,6 +95,8 @@ export default function AdminPage() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<OrderWithDetails | null>(null);
   const [newProduct, setNewProduct] = useState<{
     name: string;
     description: string;
@@ -171,12 +173,19 @@ export default function AdminPage() {
     }
   });
 
+  const handleViewOrderDetails = (order: OrderWithDetails) => {
+    setSelectedOrder(order);
+    setIsOrderDetailsOpen(true);
+  };
+
   const handleAcceptOrder = (orderId: number) => {
     updateOrderStatusMutation.mutate({ orderId, status: OrderStatus.COMPLETED });
+    setIsOrderDetailsOpen(false);
   };
 
   const handleRejectOrder = (orderId: number) => {
     updateOrderStatusMutation.mutate({ orderId, status: OrderStatus.CANCELLED });
+    setIsOrderDetailsOpen(false);
   };
 
   const handleAddProduct = () => {
@@ -412,33 +421,36 @@ export default function AdminPage() {
                           <TableCell>{formatCurrency(order.total)}</TableCell>
                           <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
                           <TableCell className="text-right">
-                            {order.status === OrderStatus.PENDING && (
-                              <div className="flex justify-end space-x-2">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  className="bg-green-50 text-green-600 hover:bg-green-100 border-green-200"
-                                  onClick={() => handleAcceptOrder(order.id)}
-                                >
-                                  <Check className="h-4 w-4 mr-1" /> Accetta
-                                </Button>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  className="bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
-                                  onClick={() => handleRejectOrder(order.id)}
-                                >
-                                  <X className="h-4 w-4 mr-1" /> Rifiuta
-                                </Button>
-                              </div>
-                            )}
-                            {order.status !== OrderStatus.PENDING && (
-                              <span className="text-gray-500 text-sm">
-                                {order.status === OrderStatus.COMPLETED ? "Accettato" : 
-                                 order.status === OrderStatus.CANCELLED ? "Rifiutato" : 
-                                 order.status === OrderStatus.PROCESSING ? "In lavorazione" : ""}
-                              </span>
-                            )}
+                            <div className="flex justify-end space-x-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200"
+                                onClick={() => handleViewOrderDetails(order)}
+                              >
+                                Dettagli
+                              </Button>
+                              {order.status === OrderStatus.PENDING && (
+                                <>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="bg-green-50 text-green-600 hover:bg-green-100 border-green-200"
+                                    onClick={() => handleViewOrderDetails(order)}
+                                  >
+                                    <Check className="h-4 w-4 mr-1" /> Accetta
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
+                                    onClick={() => handleViewOrderDetails(order)}
+                                  >
+                                    <X className="h-4 w-4 mr-1" /> Rifiuta
+                                  </Button>
+                                </>
+                              )}
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -653,6 +665,105 @@ export default function AdminPage() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Dialog per i dettagli dell'ordine */}
+      <Dialog open={isOrderDetailsOpen} onOpenChange={setIsOrderDetailsOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Dettagli Ordine #{selectedOrder?.id}</DialogTitle>
+            <DialogDescription>
+              Informazioni dettagliate sull'ordine
+            </DialogDescription>
+          </DialogHeader>
+          {selectedOrder && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500">Cliente</h4>
+                  <p className="font-medium">{selectedOrder.user.firstName} {selectedOrder.user.lastName}</p>
+                  <p className="text-sm text-gray-500">Classe {selectedOrder.user.classRoom}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500">Info Ordine</h4>
+                  <p className="text-sm">Data: {new Date(selectedOrder.orderDate).toLocaleDateString()}</p>
+                  <p className="text-sm">Stato: 
+                    {selectedOrder.status === OrderStatus.PENDING && <span className="text-yellow-600"> In Attesa</span>}
+                    {selectedOrder.status === OrderStatus.PROCESSING && <span className="text-blue-600"> In Preparazione</span>}
+                    {selectedOrder.status === OrderStatus.COMPLETED && <span className="text-green-600"> Completato</span>}
+                    {selectedOrder.status === OrderStatus.CANCELLED && <span className="text-red-600"> Annullato</span>}
+                  </p>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="text-sm font-medium text-gray-500 mb-2">Prodotti Ordinati</h4>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Prodotto</TableHead>
+                      <TableHead>Prezzo</TableHead>
+                      <TableHead>Quantità</TableHead>
+                      <TableHead className="text-right">Totale</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {selectedOrder.items.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell>{item.product?.name || `Prodotto #${item.productId}`}</TableCell>
+                        <TableCell>{formatCurrency(item.price)}</TableCell>
+                        <TableCell>{item.quantity}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(item.price * item.quantity)}</TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-right font-medium">Totale Ordine</TableCell>
+                      <TableCell className="text-right font-bold">{formatCurrency(selectedOrder.total)}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+              
+              {selectedOrder.status === OrderStatus.PENDING && (
+                <DialogFooter className="flex justify-between">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsOrderDetailsOpen(false)}
+                  >
+                    Chiudi
+                  </Button>
+                  <div className="space-x-2">
+                    <Button 
+                      variant="outline" 
+                      className="bg-green-50 text-green-600 hover:bg-green-100 border-green-200"
+                      onClick={() => handleAcceptOrder(selectedOrder.id)}
+                    >
+                      <Check className="h-4 w-4 mr-1" /> Accetta Ordine
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
+                      onClick={() => handleRejectOrder(selectedOrder.id)}
+                    >
+                      <X className="h-4 w-4 mr-1" /> Rifiuta Ordine
+                    </Button>
+                  </div>
+                </DialogFooter>
+              )}
+              
+              {selectedOrder.status !== OrderStatus.PENDING && (
+                <DialogFooter>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsOrderDetailsOpen(false)}
+                  >
+                    Chiudi
+                  </Button>
+                </DialogFooter>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
