@@ -57,6 +57,9 @@ export class MemStorage implements IStorage {
     this.orderId = 1;
     this.orderItemId = 1;
     
+    // Aggiungi l'utente amministratore predefinito
+    this.createAdminUser();
+    
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // 24 hours
     });
@@ -164,6 +167,23 @@ export class MemStorage implements IStorage {
     sampleProducts.forEach(product => {
       this.createProduct(product);
     });
+  }
+
+  // Crea l'utente amministratore predefinito
+  private async createAdminUser() {
+    const adminUser: InsertUser = {
+      username: "prova@amministratore.it",
+      password: "Prova2025!",
+      firstName: "Admin",
+      lastName: "System",
+      classRoom: "Admin",
+      email: "prova@amministratore.it",
+      isAdmin: true,
+      isRepresentative: false
+    };
+    
+    const user = await this.createUser(adminUser);
+    console.log("Utente amministratore creato:", user.username);
   }
 
   // User operations

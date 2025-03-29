@@ -136,8 +136,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      // Check if user is a representative
-      if (!req.user?.isRepresentative) {
+      // Check if user is a representative or admin
+      if (!req.user?.isRepresentative && !req.user?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
 
@@ -178,8 +178,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      // Check if user is a representative
-      if (!req.user?.isRepresentative) {
+      // Check if user is a representative or admin
+      if (!req.user?.isRepresentative && !req.user?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
       
@@ -217,8 +217,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      // Check if user is a representative
-      if (!req.user?.isRepresentative) {
+      // Check if user is a representative or admin
+      if (!req.user?.isRepresentative && !req.user?.isAdmin) {
         return res.status(403).json({ message: "Forbidden" });
       }
 

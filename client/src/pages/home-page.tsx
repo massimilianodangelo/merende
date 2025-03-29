@@ -112,8 +112,14 @@ export default function HomePage() {
                   <FileText className="mr-2 h-4 w-4" />
                   <span>I miei ordini</span>
                 </DropdownMenuItem>
-                {user?.isRepresentative && (
+                {user?.isAdmin && (
                   <DropdownMenuItem onClick={() => navigate("/admin")}>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Pannello amministratore</span>
+                  </DropdownMenuItem>
+                )}
+                {user?.isRepresentative && !user?.isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate("/representative")}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Pannello rappresentante</span>
                   </DropdownMenuItem>
