@@ -223,9 +223,15 @@ export default function AdminPage() {
     logoutMutation.mutate();
   };
   
-  // Calculate stats if data is available
-  const totalOrders = orders?.length || 0;
-  const totalRevenue = orders?.reduce((acc, order) => acc + order.total, 0) || 0;
+  // Calculate stats based only on completed/cancelled orders
+  const processedOrders = orders?.filter(order => 
+    order.status === OrderStatus.COMPLETED || 
+    order.status === OrderStatus.CANCELLED
+  ) || [];
+  const totalOrders = processedOrders.length || 0;
+  const totalRevenue = processedOrders
+    .filter(order => order.status === OrderStatus.COMPLETED)
+    .reduce((acc, order) => acc + order.total, 0) || 0;
   const pendingOrders = orders?.filter(order => order.status === OrderStatus.PENDING).length || 0;
   const completedOrders = orders?.filter(order => order.status === OrderStatus.COMPLETED).length || 0;
   
@@ -709,7 +715,9 @@ export default function AdminPage() {
                   <TableBody>
                     {selectedOrder.items.map((item) => (
                       <TableRow key={item.id}>
-                        <TableCell>{item.product?.name || `Prodotto #${item.productId}`}</TableCell>
+                        <TableCell>
+                          {products?.find(p => p.id === item.productId)?.name || item.product?.name || ""}
+                        </TableCell>
                         <TableCell>{formatCurrency(item.price)}</TableCell>
                         <TableCell>{item.quantity}</TableCell>
                         <TableCell className="text-right">{formatCurrency(item.price * item.quantity)}</TableCell>
