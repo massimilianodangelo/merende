@@ -28,6 +28,15 @@ export function ProtectedRoute({
       </Route>
     );
   }
+  
+  // Se l'utente è admin e sta cercando di accedere alla home, reindirizza all'area admin
+  if (user.isAdmin && path === "/") {
+    return (
+      <Route path={path}>
+        <Redirect to="/admin" />
+      </Route>
+    );
+  }
 
   return <Route path={path} component={Component} />;
 }
