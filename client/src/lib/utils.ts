@@ -25,9 +25,8 @@ export function getTodayWithTime(hours: number, minutes: number): Date {
 
 // Check if current time is before the order deadline
 export function isBeforeOrderDeadline(): boolean {
-  const now = new Date();
-  const deadline = getTodayWithTime(10, 30); // 10:30 AM
-  return now < deadline;
+  // Rimozione limitazione oraria, sempre disponibile
+  return true;
 }
 
 // Format date to human-readable string

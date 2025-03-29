@@ -78,9 +78,8 @@ export const ProductCategories = {
   ALL: "Tutti",
   SANDWICHES: "Panini",
   PIZZAS: "Pizze",
-  FOCACCIAS: "Focacce",
-  PASTRIES: "Dolci",
-  DRINKS: "Bevande",
+  TRAMEZZINI: "Tramezzini",
+  CALZONI: "Calzoni",
 } as const;
 
 export type ProductCategory = typeof ProductCategories[keyof typeof ProductCategories];

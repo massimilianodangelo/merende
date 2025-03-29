@@ -19,7 +19,8 @@ export function CartContents({ onClose, onOrderPlaced }: CartContentsProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const beforeDeadline = isBeforeOrderDeadline();
+  // Gli ordini sono sempre disponibili
+  const beforeDeadline = true;
   
   const createOrderMutation = useMutation({
     mutationFn: async () => {
@@ -53,14 +54,7 @@ export function CartContents({ onClose, onOrderPlaced }: CartContentsProps) {
   });
 
   const handlePlaceOrder = () => {
-    if (!beforeDeadline) {
-      toast({
-        title: "Ordini chiusi",
-        description: "Gli ordini sono chiusi per oggi. Riprova domani.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Rimuove controllo deadline, ordini sempre disponibili
     
     if (items.length === 0) {
       toast({
@@ -142,17 +136,11 @@ export function CartContents({ onClose, onOrderPlaced }: CartContentsProps) {
           <Button
             className="flex-1"
             onClick={handlePlaceOrder}
-            disabled={items.length === 0 || isSubmitting || !beforeDeadline}
+            disabled={items.length === 0 || isSubmitting}
           >
             {isSubmitting ? "Elaborazione..." : "Conferma ordine"}
           </Button>
         </div>
-        
-        {!beforeDeadline && (
-          <p className="mt-2 text-xs text-red-500 text-center">
-            Gli ordini sono chiusi per oggi. Riprova domani.
-          </p>
-        )}
       </div>
     </div>
   );

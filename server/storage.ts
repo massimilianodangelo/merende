@@ -68,45 +68,94 @@ export class MemStorage implements IStorage {
   private initializeProducts() {
     const sampleProducts: InsertProduct[] = [
       {
-        name: "Panino al prosciutto",
-        description: "Panino con prosciutto cotto e formaggio",
+        name: "TRAMEZZINO TONNO E POMODORO",
+        description: "Tramezzino con tonno e pomodoro",
+        price: 2.00,
+        category: "Tramezzini",
+        available: true
+      },
+      {
+        name: "TRAMEZZINO PROSCIUTTO COTTO",
+        description: "Tramezzino con prosciutto cotto e formaggio edamer",
+        price: 2.00,
+        category: "Tramezzini",
+        available: true
+      },
+      {
+        name: "TRAMEZZINO PROSCIUTTO CRUDO",
+        description: "Tramezzino con prosciutto crudo e formaggio edamer",
+        price: 2.00,
+        category: "Tramezzini",
+        available: true
+      },
+      {
+        name: "TRAMEZZINO SALAME",
+        description: "Tramezzino con salame e formaggio edamer",
+        price: 2.00,
+        category: "Tramezzini",
+        available: true
+      },
+      {
+        name: "CALZONE AL FORNO",
+        description: "Calzone al forno con prosciutto cotto e mozzarella",
+        price: 2.00,
+        category: "Calzoni",
+        available: true
+      },
+      {
+        name: "PANINO TONDO PROSCIUTTO CRUDO",
+        description: "Panino tondo con prosciutto crudo",
         price: 2.50,
         category: "Panini",
         available: true
       },
       {
-        name: "Pizza margherita",
-        description: "Trancio di pizza con pomodoro e mozzarella",
-        price: 1.80,
+        name: "PANINO TONDO PETTO DI TACCHINO",
+        description: "Panino tondo con petto di tacchino arrosto, rucola, grana e olio d'oliva",
+        price: 2.50,
+        category: "Panini",
+        available: true
+      },
+      {
+        name: "PANINO TONDO PROSCIUTTO COTTO",
+        description: "Panino tondo con prosciutto cotto",
+        price: 2.50,
+        category: "Panini",
+        available: true
+      },
+      {
+        name: "PANINO TONDO SALAME",
+        description: "Panino tondo con salame",
+        price: 2.50,
+        category: "Panini",
+        available: true
+      },
+      {
+        name: "PANINO TONDO HAMBURGER",
+        description: "Panino tondo con hamburger di manzo, lattuga e pomodoro",
+        price: 2.50,
+        category: "Panini",
+        available: true
+      },
+      {
+        name: "PIZZA BIANCA SEMPLICE",
+        description: "Pizza bianca semplice",
+        price: 1.00,
         category: "Pizze",
         available: true
       },
       {
-        name: "Focaccia al rosmarino",
-        description: "Focaccia con olio e rosmarino",
+        name: "PIZZA ROSSA SEMPLICE",
+        description: "Pizza rossa con pomodoro",
         price: 1.50,
-        category: "Focacce",
+        category: "Pizze",
         available: true
       },
       {
-        name: "Cornetto alla crema",
-        description: "Cornetto sfogliato con ripieno alla crema",
-        price: 1.20,
-        category: "Dolci",
-        available: true
-      },
-      {
-        name: "Panino vegetariano",
-        description: "Panino con verdure grigliate e formaggio",
-        price: 2.20,
-        category: "Panini",
-        available: false
-      },
-      {
-        name: "Acqua naturale 0.5L",
-        description: "Bottiglia d'acqua naturale da 0.5 litri",
-        price: 0.80,
-        category: "Bevande",
+        name: "PIZZA PATATE",
+        description: "Pizza con patate",
+        price: 1.50,
+        category: "Pizze",
         available: true
       }
     ];
