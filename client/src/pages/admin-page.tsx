@@ -642,7 +642,8 @@ export default function AdminPage() {
                               <TableHead>Cliente</TableHead>
                               <TableHead>Stato</TableHead>
                               <TableHead>Totale</TableHead>
-                              <TableHead className="text-right">Data</TableHead>
+                              <TableHead>Data</TableHead>
+                              <TableHead className="text-right">Azioni</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -657,7 +658,17 @@ export default function AdminPage() {
                                   {order.status === OrderStatus.CANCELLED && <span className="text-red-600">Annullato</span>}
                                 </TableCell>
                                 <TableCell>{formatCurrency(order.total)}</TableCell>
-                                <TableCell className="text-right">{new Date(order.orderDate).toLocaleDateString()}</TableCell>
+                                <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
+                                <TableCell className="text-right">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200"
+                                    onClick={() => handleViewOrderDetails(order)}
+                                  >
+                                    Dettagli
+                                  </Button>
+                                </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
