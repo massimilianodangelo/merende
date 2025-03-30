@@ -23,10 +23,10 @@ async function hashPassword(password: string) {
 
 async function comparePasswords(supplied: string, stored: string) {
   // Aggiunge log per debug
-  console.log(`Comparing password for admin check. Stored contains salt: ${stored.includes("c0ffee12deadbeef34abcd5678")}`);
+  console.log(`Comparing password for admin check.`);
   
-  // Se l'utente è l'amministratore con password fissa, usa un metodo speciale
-  if (stored.includes("c0ffee12deadbeef34abcd5678")) {
+  // Se l'utente è un amministratore con password creata usando SHA-256
+  if (stored.includes("c0ffee12deadbeef34abcd5678") || stored.includes("f1b2c3d4e5f6789abcdef123")) {
     const [hashed, salt] = stored.split(".");
     console.log("Admin login attempt, using SHA-256");
     // Usa lo stesso algoritmo usato per creare la password admin
@@ -132,7 +132,8 @@ export function setupAuth(app: Express) {
       lastName: user.lastName,
       classRoom: user.classRoom,
       isRepresentative: user.isRepresentative,
-      isAdmin: user.isAdmin
+      isAdmin: user.isAdmin,
+      isUserAdmin: user.isUserAdmin
     });
   });
 
@@ -154,7 +155,8 @@ export function setupAuth(app: Express) {
       lastName: user.lastName,
       classRoom: user.classRoom,
       isRepresentative: user.isRepresentative,
-      isAdmin: user.isAdmin
+      isAdmin: user.isAdmin,
+      isUserAdmin: user.isUserAdmin
     });
   });
 }
