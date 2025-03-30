@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useClasses } from "@/hooks/use-classes";
@@ -100,6 +100,18 @@ export default function AdminPage() {
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderWithDetails | null>(null);
+  const [showOnlyToday, setShowOnlyToday] = useState<boolean>(true);
+  
+  // Funzione per verificare se un ordine è di oggi
+  const isOrderFromToday = useCallback((orderDate: string) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const orderDateObj = new Date(orderDate);
+    orderDateObj.setHours(0, 0, 0, 0);
+    
+    return orderDateObj.getTime() === today.getTime();
+  }, []);
   const [newProduct, setNewProduct] = useState<{
     name: string;
     description: string;
@@ -252,8 +264,16 @@ export default function AdminPage() {
     logoutMutation.mutate();
   };
   
+  // Filtra gli ordini in base alla preferenza di visualizzazione (solo oggi o tutti)
+  const filteredOrders = orders ? orders.filter(order => {
+    if (showOnlyToday) {
+      return isOrderFromToday(order.orderDate);
+    }
+    return true; // Se showOnlyToday è false, mostra tutti gli ordini
+  }) : [];
+  
   // Calculate stats based only on completed/cancelled orders
-  const processedOrders = orders?.filter(order => 
+  const processedOrders = filteredOrders.filter(order => 
     order.status === OrderStatus.COMPLETED || 
     order.status === OrderStatus.CANCELLED
   ) || [];
@@ -261,11 +281,11 @@ export default function AdminPage() {
   const totalRevenue = processedOrders
     .filter(order => order.status === OrderStatus.COMPLETED)
     .reduce((acc, order) => acc + order.total, 0) || 0;
-  const pendingOrders = orders?.filter(order => order.status === OrderStatus.PENDING).length || 0;
-  const completedOrders = orders?.filter(order => order.status === OrderStatus.COMPLETED).length || 0;
+  const pendingOrders = filteredOrders.filter(order => order.status === OrderStatus.PENDING).length || 0;
+  const completedOrders = filteredOrders.filter(order => order.status === OrderStatus.COMPLETED).length || 0;
   
   // Group orders by class
-  const ordersByClass = orders?.reduce((acc, order) => {
+  const ordersByClass = filteredOrders.reduce((acc, order) => {
     const classRoom = order.user && order.user.classRoom ? order.user.classRoom : "N/A";
     if (!acc[classRoom]) {
       acc[classRoom] = [];
@@ -274,8 +294,8 @@ export default function AdminPage() {
     return acc;
   }, {} as Record<string, OrderWithDetails[]>) || {};
   
-  // Calculate total products ordered
-  const productCounts = orders?.reduce((acc, order) => {
+  // Calculate total products ordered (filtrato per data se necessario)
+  const productCounts = filteredOrders.reduce((acc, order) => {
     order.items.forEach(item => {
       const productId = item.productId;
       if (!acc[productId]) {
@@ -344,6 +364,23 @@ export default function AdminPage() {
           
           {/* Dashboard content */}
           <TabsContent value="dashboard" className="space-y-4">
+            <Card className="w-full">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold">Statistiche</h3>
+                  <div className="flex items-center space-x-2">
+                    <Label htmlFor="dashboard-show-only-today" className="text-sm">
+                      Mostra solo dati di oggi
+                    </Label>
+                    <Switch
+                      id="dashboard-show-only-today"
+                      checked={showOnlyToday}
+                      onCheckedChange={setShowOnlyToday}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card>
                 <CardHeader className="pb-2">
@@ -420,8 +457,18 @@ export default function AdminPage() {
           {/* Orders content */}
           <TabsContent value="orders" className="space-y-4">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Tutti gli Ordini</CardTitle>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="show-only-today" className="text-sm">
+                    Mostra solo ordini di oggi
+                  </Label>
+                  <Switch
+                    id="show-only-today"
+                    checked={showOnlyToday}
+                    onCheckedChange={setShowOnlyToday}
+                  />
+                </div>
               </CardHeader>
               <CardContent>
                 {isLoadingOrders ? (
@@ -433,7 +480,7 @@ export default function AdminPage() {
                     {/* Ordini in attesa */}
                     <div>
                       <h3 className="text-lg font-semibold mb-4 pb-2 border-b">Ordini in Attesa</h3>
-                      {orders?.filter(order => order.status === OrderStatus.PENDING).length === 0 ? (
+                      {filteredOrders.filter(order => order.status === OrderStatus.PENDING).length === 0 ? (
                         <div className="text-center py-4 text-gray-500">
                           Nessun ordine in attesa
                         </div>
@@ -450,7 +497,7 @@ export default function AdminPage() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {orders?.filter(order => order.status === OrderStatus.PENDING).map(order => (
+                            {filteredOrders.filter(order => order.status === OrderStatus.PENDING).map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
                                 <TableCell>
@@ -501,7 +548,7 @@ export default function AdminPage() {
                     {/* Ordini completati */}
                     <div>
                       <h3 className="text-lg font-semibold mb-4 pb-2 border-b">Ordini Completati</h3>
-                      {orders?.filter(order => order.status === OrderStatus.COMPLETED).length === 0 ? (
+                      {filteredOrders.filter(order => order.status === OrderStatus.COMPLETED).length === 0 ? (
                         <div className="text-center py-4 text-gray-500">
                           Nessun ordine completato
                         </div>
@@ -518,7 +565,7 @@ export default function AdminPage() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {orders?.filter(order => order.status === OrderStatus.COMPLETED).map(order => (
+                            {filteredOrders.filter(order => order.status === OrderStatus.COMPLETED).map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
                                 <TableCell>
@@ -551,7 +598,7 @@ export default function AdminPage() {
                     {/* Ordini annullati */}
                     <div>
                       <h3 className="text-lg font-semibold mb-4 pb-2 border-b">Ordini Annullati</h3>
-                      {orders?.filter(order => order.status === OrderStatus.CANCELLED).length === 0 ? (
+                      {filteredOrders.filter(order => order.status === OrderStatus.CANCELLED).length === 0 ? (
                         <div className="text-center py-4 text-gray-500">
                           Nessun ordine annullato
                         </div>
@@ -568,7 +615,7 @@ export default function AdminPage() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {orders?.filter(order => order.status === OrderStatus.CANCELLED).map(order => (
+                            {filteredOrders.filter(order => order.status === OrderStatus.CANCELLED).map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
                                 <TableCell>
@@ -758,8 +805,18 @@ export default function AdminPage() {
           {/* Classes content */}
           <TabsContent value="classes" className="space-y-4">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Ordini per Classe</CardTitle>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="classes-show-only-today" className="text-sm">
+                    Mostra solo ordini di oggi
+                  </Label>
+                  <Switch
+                    id="classes-show-only-today"
+                    checked={showOnlyToday}
+                    onCheckedChange={setShowOnlyToday}
+                  />
+                </div>
               </CardHeader>
               <CardContent>
                 {isLoadingOrders ? (
