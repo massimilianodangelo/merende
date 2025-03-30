@@ -2,6 +2,8 @@ import { users, type User, type InsertUser, products, type Product, type InsertP
 import session from "express-session";
 import createMemoryStore from "memorystore";
 
+// Fix per l'errore di tipo per SessionStore
+type SessionStore = session.Store;
 const MemoryStore = createMemoryStore(session);
 
 export interface IStorage {
@@ -16,6 +18,7 @@ export interface IStorage {
   getProduct(id: number): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product | undefined>;
+  deleteProduct(id: number): Promise<boolean>;
   
   // Order operations
   getOrders(): Promise<Order[]>;
@@ -31,7 +34,7 @@ export interface IStorage {
   createOrderItem(orderItem: InsertOrderItem): Promise<OrderItem>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: SessionStore;
 }
 
 export class MemStorage implements IStorage {
@@ -39,7 +42,7 @@ export class MemStorage implements IStorage {
   private products: Map<number, Product>;
   private orders: Map<number, Order>;
   private orderItems: Map<number, OrderItem>;
-  public sessionStore: session.SessionStore;
+  public sessionStore: SessionStore;
   
   private userId: number;
   private productId: number;
@@ -267,6 +270,16 @@ export class MemStorage implements IStorage {
     const updatedProduct = { ...existingProduct, ...product };
     this.products.set(id, updatedProduct);
     return updatedProduct;
+  }
+
+  async deleteProduct(id: number): Promise<boolean> {
+    const existingProduct = this.products.get(id);
+    if (!existingProduct) {
+      return false;
+    }
+    
+    this.products.delete(id);
+    return true;
   }
 
   // Order operations

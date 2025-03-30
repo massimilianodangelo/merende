@@ -12,7 +12,8 @@ import {
   Check,
   X,
   Plus,
-  Settings
+  Settings,
+  Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -188,6 +189,32 @@ export default function AdminPage() {
     setIsOrderDetailsOpen(false);
   };
 
+  // Mutation for deleting a product
+  const deleteProductMutation = useMutation({
+    mutationFn: async (productId: number) => {
+      const res = await apiRequest("DELETE", `/api/products/${productId}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({
+        title: "Prodotto eliminato",
+        description: "Il prodotto è stato eliminato con successo.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'eliminazione del prodotto.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleDeleteProduct = (productId: number) => {
+    deleteProductMutation.mutate(productId);
+  };
+
   const handleAddProduct = () => {
     if (!newProduct.name || !newProduct.description || !newProduct.price || !newProduct.category) {
       toast({
@@ -264,7 +291,7 @@ export default function AdminPage() {
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-bold text-gray-900">
-              ScuolaMerenda
+              Distribuzione merende
             </h1>
             <span className="text-sm text-gray-500">Pannello Amministratore</span>
           </div>
@@ -687,8 +714,17 @@ export default function AdminPage() {
                               <span className="text-red-600">Non disponibile</span>
                             )}
                           </TableCell>
-                          <TableCell className="text-right space-x-2">
-                            <span className="text-sm text-gray-500">ID: #{product.id}</span>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end space-x-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
+                                onClick={() => handleDeleteProduct(product.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
