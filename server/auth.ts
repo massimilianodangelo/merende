@@ -89,8 +89,10 @@ export function setupAuth(app: Express) {
   passport.deserializeUser(async (id: number, done) => {
     try {
       const user = await storage.getUser(id);
+      console.log("Deserializing user:", id, user ? `[${user.username}]` : "not found");
       done(null, user);
     } catch (err) {
+      console.error("Error deserializing user:", id, err);
       done(err);
     }
   });
@@ -128,6 +130,7 @@ export function setupAuth(app: Express) {
 
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
     const user = req.user as SelectUser;
+    console.log("User logged in successfully:", user.username, "isUserAdmin:", user.isUserAdmin);
     return res.status(200).json({
       id: user.id,
       username: user.username,
@@ -148,8 +151,10 @@ export function setupAuth(app: Express) {
   });
 
   app.get("/api/user", (req, res) => {
+    console.log("GET /api/user - Authentication status:", req.isAuthenticated());
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const user = req.user as SelectUser;
+    console.log("GET /api/user - User data:", user.username, "isUserAdmin:", user.isUserAdmin);
     
     return res.json({
       id: user.id,

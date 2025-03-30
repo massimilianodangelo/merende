@@ -305,12 +305,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User management routes (solo per admin utenti)
   app.get("/api/admin/users", async (req, res) => {
     try {
+      console.log("GET /api/admin/users - Authentication status:", req.isAuthenticated());
       if (!req.isAuthenticated()) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
+      console.log("GET /api/admin/users - User:", req.user);
       // Check if user is a user admin
       if (!req.user?.isUserAdmin) {
+        console.log("GET /api/admin/users - Access denied, user is not an admin:", req.user?.username);
         return res.status(403).json({ message: "Forbidden" });
       }
 
