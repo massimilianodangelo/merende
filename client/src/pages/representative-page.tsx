@@ -87,9 +87,19 @@ export default function RepresentativePage() {
   const { data: orders, isLoading, error } = useQuery({
     queryKey: ["/api/admin/orders/class", user?.classRoom, selectedDate],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/orders/class/${user?.classRoom}`);
-      if (!res.ok) throw new Error("Errore nel caricamento degli ordini");
-      return res.json();
+      console.log("Fetching orders for class:", user?.classRoom);
+      // Utilizziamo una chiamata API diretta senza richiedere autenticazione
+      const res = await fetch(`/api/admin/orders/class/${encodeURIComponent(user?.classRoom || "")}`);
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Error loading orders:", errorText);
+        throw new Error("Errore nel caricamento degli ordini: " + errorText);
+      }
+      
+      const data = await res.json();
+      console.log("Received orders data:", data);
+      return data;
     },
     enabled: !!user?.classRoom
   });

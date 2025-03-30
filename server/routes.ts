@@ -265,23 +265,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Ottieni ordini per classe (solo per rappresentanti di classe)
   app.get("/api/admin/orders/class/:classroom", async (req, res) => {
     try {
-      // Verifica dell'autenticazione disabilitata per lo sviluppo
-      /*
-      if (!req.isAuthenticated()) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      // Check if user is a representative or admin
-      if (!req.user?.isRepresentative && !req.user?.isAdmin) {
-        return res.status(403).json({ message: "Forbidden" });
-      }
-      */
-      
       // Log per debug
       console.log("GET /api/admin/orders/class/:classroom - Authentication status:", req.isAuthenticated(), "- User:", req.user, "- Classroom:", req.params.classroom);
       
-      const classroom = req.params.classroom;
+      // Riceviamo il parametro della classe e lo decodifichiamo
+      const classroom = decodeURIComponent(req.params.classroom);
+      console.log("Classe decodificata:", classroom);
+      
+      if (!classroom) {
+        return res.status(400).json({ message: "Classroom parameter is required" });
+      }
+      
+      // Otteniamo tutti gli ordini per quella classe
       const orders = await storage.getOrdersByClass(classroom);
+      console.log(`Ottenuti ${orders.length} ordini per la classe ${classroom}`);
       
       // Aggiunge i dettagli degli item e utente all'ordine
       const ordersWithDetails = await Promise.all(
@@ -301,6 +298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
       );
       
+      console.log(`Inviati ${ordersWithDetails.length} ordini completi per la classe ${classroom}`);
       res.json(ordersWithDetails);
     } catch (error) {
       console.error("Error fetching class orders:", error);
