@@ -11,9 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Check, X, Package, Clock, RotateCcw, CheckCircle } from "lucide-react";
+import { Loader2, Check, X, Package, Clock, RotateCcw, CheckCircle, Home } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { OrderStatus } from "@shared/schema";
+import { Link } from "wouter";
 
 // Traduzioni degli stati degli ordini
 const orderStatusTranslations = {
@@ -358,13 +359,18 @@ export default function RepresentativePage() {
             Visualizza e gestisci gli ordini per la classe {user?.classRoom}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
             className="w-auto"
           />
+          <Button variant="outline" size="icon" asChild>
+            <Link href="/" className="flex items-center justify-center" title="Torna alla Home">
+              <Home className="h-4 w-4" />
+            </Link>
+          </Button>
         </div>
       </div>
 
