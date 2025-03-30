@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
+import { useClasses } from "@/hooks/use-classes";
 import { getInitials, formatCurrency } from "@/lib/utils";
 import { 
   LogOut, 
@@ -94,6 +95,7 @@ type OrderWithDetails = {
 export default function AdminPage() {
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
+  const { classes } = useClasses();
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [isOrderDetailsOpen, setIsOrderDetailsOpen] = useState(false);
@@ -264,7 +266,7 @@ export default function AdminPage() {
   
   // Group orders by class
   const ordersByClass = orders?.reduce((acc, order) => {
-    const classRoom = order.user.classRoom;
+    const classRoom = order.user && order.user.classRoom ? order.user.classRoom : "N/A";
     if (!acc[classRoom]) {
       acc[classRoom] = [];
     }
@@ -451,8 +453,14 @@ export default function AdminPage() {
                             {orders?.filter(order => order.status === OrderStatus.PENDING).map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
-                                <TableCell>{order.user.firstName} {order.user.lastName}</TableCell>
-                                <TableCell>{order.user.classRoom}</TableCell>
+                                <TableCell>
+                                  {order.user ? `${order.user.firstName || "N/A"} ${order.user.lastName || "N/A"}` : "Utente non disponibile"}
+                                </TableCell>
+                                <TableCell>
+                                  {order.user && order.user.classRoom ? order.user.classRoom : "N/A"}
+                                  {order.user && order.user.classRoom && !classes.includes(order.user.classRoom) && 
+                                   <span className="text-amber-500 ml-2">(classe non più disponibile)</span>}
+                                </TableCell>
                                 <TableCell>{formatCurrency(order.total)}</TableCell>
                                 <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
                                 <TableCell className="text-right">
@@ -469,7 +477,7 @@ export default function AdminPage() {
                                       variant="outline" 
                                       size="sm" 
                                       className="bg-green-50 text-green-600 hover:bg-green-100 border-green-200"
-                                      onClick={() => handleViewOrderDetails(order)}
+                                      onClick={() => handleAcceptOrder(order.id)}
                                     >
                                       <Check className="h-4 w-4 mr-1" /> Accetta
                                     </Button>
@@ -477,7 +485,7 @@ export default function AdminPage() {
                                       variant="outline" 
                                       size="sm" 
                                       className="bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
-                                      onClick={() => handleViewOrderDetails(order)}
+                                      onClick={() => handleRejectOrder(order.id)}
                                     >
                                       <X className="h-4 w-4 mr-1" /> Rifiuta
                                     </Button>
@@ -513,8 +521,14 @@ export default function AdminPage() {
                             {orders?.filter(order => order.status === OrderStatus.COMPLETED).map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
-                                <TableCell>{order.user.firstName} {order.user.lastName}</TableCell>
-                                <TableCell>{order.user.classRoom}</TableCell>
+                                <TableCell>
+                                  {order.user ? `${order.user.firstName || "N/A"} ${order.user.lastName || "N/A"}` : "Utente non disponibile"}
+                                </TableCell>
+                                <TableCell>
+                                  {order.user && order.user.classRoom ? order.user.classRoom : "N/A"}
+                                  {order.user && order.user.classRoom && !classes.includes(order.user.classRoom) && 
+                                   <span className="text-amber-500 ml-2">(classe non più disponibile)</span>}
+                                </TableCell>
                                 <TableCell>{formatCurrency(order.total)}</TableCell>
                                 <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
                                 <TableCell className="text-right">
@@ -557,8 +571,14 @@ export default function AdminPage() {
                             {orders?.filter(order => order.status === OrderStatus.CANCELLED).map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
-                                <TableCell>{order.user.firstName} {order.user.lastName}</TableCell>
-                                <TableCell>{order.user.classRoom}</TableCell>
+                                <TableCell>
+                                  {order.user ? `${order.user.firstName || "N/A"} ${order.user.lastName || "N/A"}` : "Utente non disponibile"}
+                                </TableCell>
+                                <TableCell>
+                                  {order.user && order.user.classRoom ? order.user.classRoom : "N/A"}
+                                  {order.user && order.user.classRoom && !classes.includes(order.user.classRoom) && 
+                                   <span className="text-amber-500 ml-2">(classe non più disponibile)</span>}
+                                </TableCell>
                                 <TableCell>{formatCurrency(order.total)}</TableCell>
                                 <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
                                 <TableCell className="text-right">
@@ -788,7 +808,9 @@ export default function AdminPage() {
                             {classOrders.map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
-                                <TableCell>{order.user.firstName} {order.user.lastName}</TableCell>
+                                <TableCell>
+                                  {order.user ? `${order.user.firstName || "N/A"} ${order.user.lastName || "N/A"}` : "Utente non disponibile"}
+                                </TableCell>
                                 <TableCell>
                                   {order.status === OrderStatus.PENDING && <span className="text-yellow-600">In Attesa</span>}
                                   {order.status === OrderStatus.PROCESSING && <span className="text-blue-600">In Preparazione</span>}
@@ -835,8 +857,14 @@ export default function AdminPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h4 className="text-sm font-medium text-gray-500">Cliente</h4>
-                  <p className="font-medium">{selectedOrder.user.firstName} {selectedOrder.user.lastName}</p>
-                  <p className="text-sm text-gray-500">Classe {selectedOrder.user.classRoom}</p>
+                  <p className="font-medium">
+                    {selectedOrder.user ? `${selectedOrder.user.firstName || "N/A"} ${selectedOrder.user.lastName || "N/A"}` : "Utente non disponibile"}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Classe {selectedOrder.user && selectedOrder.user.classRoom ? selectedOrder.user.classRoom : "N/A"}
+                    {selectedOrder.user && selectedOrder.user.classRoom && !classes.includes(selectedOrder.user.classRoom) && 
+                      <span className="text-amber-500 ml-2">(Classe non più esistente)</span>}
+                  </p>
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-gray-500">Info Ordine</h4>
