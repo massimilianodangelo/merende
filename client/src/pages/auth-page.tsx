@@ -165,9 +165,7 @@ export default function AuthPage() {
                         )}
                       />
                       
-                      <a href="#" className="text-sm font-medium text-primary hover:text-indigo-500">
-                        Password dimenticata?
-                      </a>
+
                     </div>
                     
                     <Button type="submit" className="w-full" disabled={loginMutation.isPending}>

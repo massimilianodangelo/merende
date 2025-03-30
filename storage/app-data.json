@@ -30,66 +30,6 @@
           "isUserAdmin": true,
           "id": 2
         }
-      ],
-      [
-        8,
-        {
-          "username": "massimiliano@gmail.com",
-          "password": "1fd012f231b6f6145693e248491f5a9b493fca224e757a86461377338146484d3ff69f561de1aa8b57416a59231810daf92fe5dbb1266c96653c9491b9c53ff7.c656bb443a1b055568ae4c4cedaa8ac5",
-          "firstName": "Massimiliano",
-          "lastName": "D'Angelo",
-          "classRoom": "5F",
-          "email": "massimiliano@gmail.com",
-          "isRepresentative": true,
-          "isAdmin": false,
-          "isUserAdmin": false,
-          "id": 8
-        }
-      ],
-      [
-        9,
-        {
-          "firstName": "Maria Vittoria",
-          "lastName": "D’Angelo",
-          "classRoom": "1F",
-          "username": "vittoria@gmail.com",
-          "email": "vittoria@gmail.com",
-          "password": "440776df0c8f7433701100ff5ad7ace69025bb3e94cec33edea66d09f5a744f58ec49024508e0f8c070f444bd343b33cb28a13f4488bb59d58619d16c605bf41.c2f2a01814c315b8905e867331245062",
-          "isRepresentative": false,
-          "id": 9,
-          "isAdmin": false,
-          "isUserAdmin": false
-        }
-      ],
-      [
-        10,
-        {
-          "firstName": "Elena",
-          "lastName": "Di Lullo",
-          "classRoom": "1F",
-          "username": "elena@gmail.com",
-          "email": "elena@gmail.com",
-          "password": "d2c48f491fc95a1a91c5fd0bf805cbd22274f3374976fcbe5fa7e9e7298dd335b5d937d88da17daaa93c1b631ff5757dd7312798d9211ea82d4e3ebee3fea347.f4f57e73b7fc387a75ee30b031de983c",
-          "isRepresentative": true,
-          "id": 10,
-          "isAdmin": false,
-          "isUserAdmin": false
-        }
-      ],
-      [
-        11,
-        {
-          "firstName": "Utente",
-          "lastName": "Prova",
-          "classRoom": "5F",
-          "username": "utente@gmail.com",
-          "email": "utente@gmail.com",
-          "password": "a857f167fcd22032b86bbe719fd2dbe53efd33ed6132f14059d242b87bbf88a3994095c205b462bcc9c3dab581389d3f0f971c91be93a9d1e734635e9c7a8122.497dad2162787c871676ce2c9cb094a4",
-          "isRepresentative": false,
-          "id": 11,
-          "isAdmin": false,
-          "isUserAdmin": false
-        }
       ]
     ],
     "products": [
@@ -259,50 +199,6 @@
           "id": 6,
           "createdAt": "2025-03-30T15:59:43.048Z"
         }
-      ],
-      [
-        7,
-        {
-          "userId": 9,
-          "status": "completed",
-          "total": 4.5,
-          "orderDate": "2025-03-30T16:13:12.157Z",
-          "id": 7,
-          "createdAt": "2025-03-30T16:13:12.828Z"
-        }
-      ],
-      [
-        8,
-        {
-          "userId": 11,
-          "status": "completed",
-          "total": 2.5,
-          "orderDate": "2025-03-30T16:13:19.142Z",
-          "id": 8,
-          "createdAt": "2025-03-30T16:13:20.097Z"
-        }
-      ],
-      [
-        9,
-        {
-          "userId": 10,
-          "status": "completed",
-          "total": 3.5,
-          "orderDate": "2025-03-30T16:13:52.536Z",
-          "id": 9,
-          "createdAt": "2025-03-30T16:13:51.165Z"
-        }
-      ],
-      [
-        10,
-        {
-          "userId": 8,
-          "status": "cancelled",
-          "total": 4,
-          "orderDate": "2025-03-30T16:14:22.676Z",
-          "id": 10,
-          "createdAt": "2025-03-30T16:14:22.944Z"
-        }
       ]
     ],
     "orderItems": [
@@ -345,79 +241,9 @@
           "price": 1,
           "id": 10
         }
-      ],
-      [
-        11,
-        {
-          "orderId": 7,
-          "productId": 5,
-          "quantity": 1,
-          "price": 2,
-          "id": 11
-        }
-      ],
-      [
-        12,
-        {
-          "orderId": 7,
-          "productId": 7,
-          "quantity": 1,
-          "price": 2.5,
-          "id": 12
-        }
-      ],
-      [
-        13,
-        {
-          "orderId": 8,
-          "productId": 13,
-          "quantity": 1,
-          "price": 1.5,
-          "id": 13
-        }
-      ],
-      [
-        14,
-        {
-          "orderId": 8,
-          "productId": 11,
-          "quantity": 1,
-          "price": 1,
-          "id": 14
-        }
-      ],
-      [
-        15,
-        {
-          "orderId": 9,
-          "productId": 11,
-          "quantity": 1,
-          "price": 1,
-          "id": 15
-        }
-      ],
-      [
-        16,
-        {
-          "orderId": 9,
-          "productId": 6,
-          "quantity": 1,
-          "price": 2.5,
-          "id": 16
-        }
-      ],
-      [
-        17,
-        {
-          "orderId": 10,
-          "productId": 5,
-          "quantity": 2,
-          "price": 2,
-          "id": 17
-        }
       ]
     ],
-    "userId": 12,
+    "userId": 13,
     "productId": 14,
     "orderId": 11,
     "orderItemId": 18
