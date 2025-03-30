@@ -6,6 +6,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@/hooks/use-auth";
 
 import {
   Table,
@@ -38,6 +39,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +56,9 @@ import {
   Search,
   RefreshCw,
   Trash2,
+  User as UserIcon,
+  LogOut,
+  ChevronDown,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -105,6 +116,7 @@ type UserWithoutPassword = Omit<User, "password">;
 export default function UserAdminPage() {
   const [_, navigate] = useLocation();
   const { toast } = useToast();
+  const { user, logoutMutation } = useAuth();
   const [isCreateUserDialogOpen, setIsCreateUserDialogOpen] = useState(false);
   const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithoutPassword | null>(null);
@@ -236,12 +248,21 @@ export default function UserAdminPage() {
 
   // Handler per la creazione di un nuovo utente
   const onCreateUserSubmit = (data: z.infer<typeof createUserSchema>) => {
+    // Se l'utente è amministratore, imposta automaticamente la classe "Admin"
+    if (data.isAdmin || data.isUserAdmin) {
+      data.classRoom = "Admin";
+    }
     createUserMutation.mutate(data);
   };
 
   // Handler per la modifica di un utente esistente
   const onEditUserSubmit = (data: z.infer<typeof updateUserSchema>) => {
     if (!selectedUser) return;
+    
+    // Se l'utente è amministratore, imposta automaticamente la classe "Admin"
+    if (data.isAdmin || data.isUserAdmin) {
+      data.classRoom = "Admin";
+    }
     
     // Se la password è vuota, rimuovila dall'oggetto
     if (!data.password) {
@@ -318,9 +339,32 @@ export default function UserAdminPage() {
               Gestione utenti
             </span>
           </div>
-          <Button variant="outline" onClick={() => navigate("/")}>
-            Torna alla home
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <UserIcon className="h-4 w-4" />
+                {user && (
+                  <span>
+                    {user.firstName} {user.lastName}
+                  </span>
+                )}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => navigate("/")}>
+                Home
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                className="text-red-500 focus:text-red-500" 
+                onClick={() => logoutMutation.mutate()}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Logout</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
