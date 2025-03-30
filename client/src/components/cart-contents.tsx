@@ -25,6 +25,7 @@ export function CartContents({ onClose, onOrderPlaced }: CartContentsProps) {
   const createOrderMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/orders", {
+        userId: user?.id,
         total,
         items,
         orderDate: new Date()

@@ -64,12 +64,13 @@ export default function MyOrdersPage() {
 
   // Fetch orders
   const { data: orders, isLoading, isError, refetch } = useQuery<OrderWithItems[]>({
-    queryKey: ["/api/orders"],
+    queryKey: ["/api/orders", user?.id],
     queryFn: async () => {
-      const res = await fetch("/api/orders");
+      const res = await fetch(`/api/orders?userId=${user?.id}`);
       if (!res.ok) throw new Error("Failed to fetch orders");
       return res.json();
-    }
+    },
+    enabled: !!user?.id
   });
 
   const handleLogout = () => {
