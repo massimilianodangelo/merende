@@ -8,9 +8,10 @@ import AuthPage from "@/pages/auth-page";
 import MyOrdersPage from "@/pages/my-orders-page";
 import AdminPage from "@/pages/admin-page";
 import RepresentativePage from "@/pages/representative-page";
+import UserAdminPage from "@/pages/user-admin-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { CartProvider } from "@/hooks/use-cart";
-import { ProtectedRoute, AdminRoute, RepresentativeRoute } from "@/lib/protected-route";
+import { ProtectedRoute, AdminRoute, RepresentativeRoute, UserAdminRoute } from "@/lib/protected-route";
 
 function Router() {
   return (
@@ -19,6 +20,7 @@ function Router() {
       <ProtectedRoute path="/my-orders" component={MyOrdersPage} />
       <RepresentativeRoute path="/representative" component={RepresentativePage} />
       <AdminRoute path="/admin" component={AdminPage} />
+      <UserAdminRoute path="/user-admin" component={UserAdminPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

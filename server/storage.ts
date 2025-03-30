@@ -11,6 +11,8 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getAllUsers(): Promise<User[]>; // Per ottenere tutti gli utenti
+  updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined>; // Per aggiornare i dati utente, inclusa la password
   
   // Product operations
   getProducts(): Promise<Product[]>;
@@ -172,36 +174,61 @@ export class MemStorage implements IStorage {
     });
   }
 
-  // Crea l'utente amministratore predefinito
+  // Crea gli utenti amministratori predefiniti
   private async createAdminUser() {
-    // Verifica se l'utente amministratore esiste già
+    // Verifica se l'utente amministratore principale esiste già
     const existingAdmin = await this.getUserByUsername("prova@amministratore.it");
-    if (existingAdmin) {
-      console.log("Utente amministratore già esistente:", existingAdmin.username);
-      return;
+    if (!existingAdmin) {
+      // Genera l'hash della password usando una funzione sincrona
+      const salt = "c0ffee12deadbeef34abcd5678";
+      const password = "Prova2025!";
+      // Usa il modulo crypto importato in modo corretto
+      const crypto = await import('crypto');
+      const hashedPassword = crypto.createHash('sha256').update(password + salt).digest('hex') + "." + salt;
+      
+      const adminUser: InsertUser = {
+        username: "prova@amministratore.it",
+        password: hashedPassword, // Password con hash
+        firstName: "Admin",
+        lastName: "System",
+        classRoom: "Admin",
+        email: "prova@amministratore.it",
+        isAdmin: true,
+        isRepresentative: false
+      };
+      
+      const user = await this.createUser(adminUser);
+      console.log("Utente amministratore principale creato:", user.username);
+    } else {
+      console.log("Utente amministratore principale già esistente:", existingAdmin.username);
     }
     
-    // Genera l'hash della password usando una funzione sincrona
-    // per evitare problemi di await
-    const salt = "c0ffee12deadbeef34abcd5678";
-    const password = "Prova2025!";
-    // Usa il modulo crypto importato in modo corretto
-    const crypto = await import('crypto');
-    const hashedPassword = crypto.createHash('sha256').update(password + salt).digest('hex') + "." + salt;
-    
-    const adminUser: InsertUser = {
-      username: "prova@amministratore.it",
-      password: hashedPassword, // Password con hash
-      firstName: "Admin",
-      lastName: "System",
-      classRoom: "Admin",
-      email: "prova@amministratore.it",
-      isAdmin: true,
-      isRepresentative: false
-    };
-    
-    const user = await this.createUser(adminUser);
-    console.log("Utente amministratore creato:", user.username);
+    // Verifica se l'utente amministratore per la gestione utenti esiste già
+    const existingUserAdmin = await this.getUserByUsername("gestione@amministratore.it");
+    if (!existingUserAdmin) {
+      // Genera l'hash della password
+      const salt = "f1b2c3d4e5f6789abcdef123";
+      const password = "Gestione2025!";
+      const crypto = await import('crypto');
+      const hashedPassword = crypto.createHash('sha256').update(password + salt).digest('hex') + "." + salt;
+      
+      const userAdminUser: InsertUser = {
+        username: "gestione@amministratore.it",
+        password: hashedPassword,
+        firstName: "Gestione",
+        lastName: "Utenti",
+        classRoom: "Admin",
+        email: "gestione@amministratore.it",
+        isAdmin: true,
+        isRepresentative: false,
+        isUserAdmin: true // Aggiungiamo questo flag per identificare gli admin di gestione utenti
+      };
+      
+      const user = await this.createUser(userAdminUser);
+      console.log("Utente amministratore per gestione utenti creato:", user.username);
+    } else {
+      console.log("Utente amministratore per gestione utenti già esistente:", existingUserAdmin.username);
+    }
   }
 
   // User operations
@@ -215,11 +242,32 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+
+  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined> {
+    const existingUser = this.users.get(id);
+    if (!existingUser) {
+      return undefined;
+    }
+    
+    const updatedUser = { ...existingUser, ...userData };
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+  
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userId++;
     
     // Controlla se è un amministratore basato sull'email
-    const isAdmin = insertUser.email === 'prova@amministratore.it';
+    const isAdmin = insertUser.email === 'prova@amministratore.it' || 
+                   insertUser.email === 'gestione@amministratore.it' || 
+                   !!insertUser.isAdmin;
+    
+    // Controlla se è un amministratore di gestione utenti
+    const isUserAdmin = insertUser.email === 'gestione@amministratore.it' ||
+                       !!insertUser.isUserAdmin;
     
     // Per ora mantengo la possibilità di diventare rappresentante tramite checkbox
     // nella form di registrazione
@@ -229,7 +277,8 @@ export class MemStorage implements IStorage {
       ...insertUser, 
       id, 
       isRepresentative, 
-      isAdmin 
+      isAdmin,
+      isUserAdmin: isUserAdmin || null 
     };
     
     this.users.set(id, user);
@@ -256,7 +305,11 @@ export class MemStorage implements IStorage {
 
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
     const id = this.productId++;
-    const product: Product = { ...insertProduct, id };
+    const product: Product = { 
+      ...insertProduct, 
+      id,
+      available: insertProduct.available !== undefined ? insertProduct.available : true 
+    };
     this.products.set(id, product);
     return product;
   }
@@ -325,7 +378,8 @@ export class MemStorage implements IStorage {
     const order: Order = { 
       ...insertOrder, 
       id, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      status: insertOrder.status || "pending"
     };
     this.orders.set(id, order);
     return order;

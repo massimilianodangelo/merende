@@ -108,7 +108,7 @@ export default function AuthPage() {
               
               <TabsContent value="login">
                 <div className="text-center mb-6">
-                  <h1 className="text-2xl font-semibold text-gray-800 mb-2">ScuolaMerenda</h1>
+                  <h1 className="text-2xl font-semibold text-gray-800 mb-2">Distribuzione merende</h1>
                   <p className="text-gray-600">Accedi per ordinare la tua merenda</p>
                 </div>
                 
@@ -203,7 +203,7 @@ export default function AuthPage() {
               
               <TabsContent value="register">
                 <div className="text-center mb-6">
-                  <h1 className="text-2xl font-semibold text-gray-800 mb-2">Registrati a ScuolaMerenda</h1>
+                  <h1 className="text-2xl font-semibold text-gray-800 mb-2">Registrati a Distribuzione merende</h1>
                   <p className="text-gray-600">Crea un account per ordinare la tua merenda</p>
                 </div>
                 
@@ -373,7 +373,7 @@ export default function AuthPage() {
         
         <div className="hidden md:block">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">ScuolaMerenda</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Distribuzione merende</h2>
             <p className="text-lg text-gray-600 mb-6">
               Semplifica l'ordine della merenda a scuola
             </p>

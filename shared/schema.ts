@@ -13,6 +13,7 @@ export const users = pgTable("users", {
   email: text("email").notNull(),
   isRepresentative: boolean("is_representative").default(false),
   isAdmin: boolean("is_admin").default(false),
+  isUserAdmin: boolean("is_user_admin").default(false), // Nuovo campo per gli amministratori che gestiscono gli utenti
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({

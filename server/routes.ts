@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { insertOrderSchema, insertOrderItemSchema, insertProductSchema, CartItem } from "@shared/schema";
+import { insertOrderSchema, insertOrderItemSchema, insertProductSchema, insertUserSchema, CartItem, InsertUser } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -299,6 +299,130 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating order status:", error);
       res.status(500).json({ message: "Failed to update order status" });
+    }
+  });
+
+  // User management routes (solo per admin utenti)
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Check if user is a user admin
+      if (!req.user?.isUserAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const users = await storage.getAllUsers();
+      
+      // Rimuovi le password prima di inviare i dati
+      const usersWithoutPasswords = users.map(user => {
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
+      
+      res.json(usersWithoutPasswords);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.post("/api/admin/users", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Check if user is a user admin
+      if (!req.user?.isUserAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      // Validare i dati dell'utente
+      const userData = {
+        username: req.body.username,
+        password: req.body.password,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        classRoom: req.body.classRoom,
+        email: req.body.email,
+        isRepresentative: req.body.isRepresentative,
+        isAdmin: req.body.isAdmin,
+        isUserAdmin: req.body.isUserAdmin
+      };
+      
+      const validatedUserData = insertUserSchema.parse(userData);
+      
+      // Controlla se l'utente esiste già
+      const existingUser = await storage.getUserByUsername(validatedUserData.username);
+      if (existingUser) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+      
+      // Creare l'utente
+      const user = await storage.createUser(validatedUserData);
+      
+      // Rimuovi la password prima di inviare i dati
+      const { password, ...userWithoutPassword } = user;
+      
+      res.status(201).json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid user data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to create user" });
+      }
+    }
+  });
+
+  app.patch("/api/admin/users/:id", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Check if user is a user admin
+      if (!req.user?.isUserAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      
+      // Ottieni l'utente esistente
+      const existingUser = await storage.getUser(id);
+      if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Raccogli i dati da aggiornare
+      const updateData: Partial<InsertUser> = {};
+      
+      if (req.body.password) updateData.password = req.body.password;
+      if (req.body.firstName) updateData.firstName = req.body.firstName;
+      if (req.body.lastName) updateData.lastName = req.body.lastName;
+      if (req.body.classRoom) updateData.classRoom = req.body.classRoom;
+      if (req.body.email) updateData.email = req.body.email;
+      if (req.body.isRepresentative !== undefined) updateData.isRepresentative = req.body.isRepresentative;
+      if (req.body.isAdmin !== undefined) updateData.isAdmin = req.body.isAdmin;
+      if (req.body.isUserAdmin !== undefined) updateData.isUserAdmin = req.body.isUserAdmin;
+      
+      // Aggiorna l'utente
+      const updatedUser = await storage.updateUser(id, updateData);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Rimuovi la password prima di inviare i dati
+      const { password, ...userWithoutPassword } = updatedUser;
+      
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
     }
   });
 
