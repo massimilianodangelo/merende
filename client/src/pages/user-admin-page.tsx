@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@shared/schema";
@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/use-auth";
+import { useClasses } from "@/hooks/use-classes";
 
 import {
   Table,
@@ -124,27 +125,8 @@ export default function UserAdminPage() {
   const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithoutPassword | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  // Stato per gestire le classi disponibili
-  const [availableClasses, setAvailableClasses] = useState<string[]>([
-    // Prima A-E
-    "1A", "2A", "3A", "4A", "5A",
-    // Prima B-E
-    "1B", "2B", "3B", "4B", "5B",
-    // Prima C-E
-    "1C", "2C", "3C", "4C", "5C",
-    // Prima D-E
-    "1D", "2D", "3D", "4D", "5D",
-    // Prima E-E
-    "1E", "2E", "3E", "4E", "5E",
-    // Prima F-F
-    "1F", "2F", "3F", "4F", "5F",
-    // Prima G-G
-    "1G", "2G", "3G",
-    // Prima H-H
-    "1H", "2H", "3H", "4H", "5H",
-    // Classe L
-    "2L", "3L"
-  ]);
+  // Utilizzo del hook useClasses per gestire le classi disponibili a livello centralizzato
+  const { classes: availableClasses, updateClasses } = useClasses();
   
   // Stato per la nuova classe da aggiungere
   const [newClass, setNewClass] = useState("");
@@ -345,7 +327,7 @@ export default function UserAdminPage() {
     }
   };
   
-  // Funzioni per gestire le classi
+  // Funzioni per gestire le classi utilizzando il hook useClasses centralizzato
   const handleAddClass = () => {
     if (!newClass.trim()) {
       toast({
@@ -365,7 +347,9 @@ export default function UserAdminPage() {
       return;
     }
     
-    setAvailableClasses(prev => [...prev, newClass.trim()].sort());
+    // Aggiorna le classi utilizzando il metodo updateClasses del hook centralizzato
+    const updatedClasses = [...availableClasses, newClass.trim()].sort();
+    updateClasses(updatedClasses);
     setNewClass("");
     toast({
       title: "Classe aggiunta",
@@ -386,7 +370,9 @@ export default function UserAdminPage() {
       return;
     }
     
-    setAvailableClasses(prev => prev.filter(c => c !== className));
+    // Aggiorna le classi utilizzando il metodo updateClasses del hook centralizzato
+    const updatedClasses = availableClasses.filter((c: string) => c !== className);
+    updateClasses(updatedClasses);
     toast({
       title: "Classe rimossa",
       description: `La classe ${className} è stata rimossa con successo.`,
