@@ -443,6 +443,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to update user" });
     }
   });
+  
+  // Endpoint per eliminare un utente
+  app.delete("/api/admin/users/:id", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Check if user is a user admin
+      if (!req.user?.isUserAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
+      const id = parseInt(req.params.id);
+      
+      // Verifica che l'utente esista
+      const existingUser = await storage.getUser(id);
+      if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Non permettere di eliminare gli amministratori principali
+      if (id === 1 || id === 2) {
+        return res.status(403).json({ message: "Cannot delete administrator accounts" });
+      }
+      
+      // Elimina l'utente
+      const deleted = await storage.deleteUser(id);
+      
+      if (!deleted) {
+        return res.status(400).json({ message: "Failed to delete user" });
+      }
+      
+      res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
   // Create HTTP server
   const httpServer = createServer(app);

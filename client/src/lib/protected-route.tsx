@@ -29,13 +29,21 @@ export function ProtectedRoute({
     );
   }
   
-  // Se l'utente è admin e sta cercando di accedere alla home, reindirizza all'area admin
-  if (user.isAdmin && path === "/") {
-    return (
-      <Route path={path}>
-        <Redirect to="/admin" />
-      </Route>
-    );
+  // Se l'utente è admin o userAdmin e sta cercando di accedere alla home, reindirizza all'area appropriata
+  if (path === "/") {
+    if (user.isAdmin) {
+      return (
+        <Route path={path}>
+          <Redirect to="/admin" />
+        </Route>
+      );
+    } else if (user.isUserAdmin) {
+      return (
+        <Route path={path}>
+          <Redirect to="/user-admin" />
+        </Route>
+      );
+    }
   }
 
   return <Route path={path} component={Component} />;

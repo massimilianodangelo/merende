@@ -47,6 +47,7 @@ import {
   AlertCircle,
   Search,
   RefreshCw,
+  Trash2,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -197,7 +198,7 @@ export default function UserAdminPage() {
       firstName: user.firstName,
       lastName: user.lastName,
       classRoom: user.classRoom,
-      isRepresentative: user.isRepresentative,
+      isRepresentative: user.isRepresentative ?? false,
       isAdmin: user.isAdmin ?? false,
       isUserAdmin: user.isUserAdmin ?? false,
       password: "",
@@ -205,6 +206,35 @@ export default function UserAdminPage() {
     setIsEditUserDialogOpen(true);
   };
 
+  // Mutation per eliminare un utente
+  const deleteUserMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("DELETE", `/api/admin/users/${id}`);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Utente eliminato",
+        description: "L'utente è stato eliminato con successo.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Errore",
+        description: "Non è stato possibile eliminare l'utente: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Handler per eliminare un utente
+  const handleDeleteUser = (id: number) => {
+    if (window.confirm("Sei sicuro di voler eliminare questo utente? Questa azione non può essere annullata.")) {
+      deleteUserMutation.mutate(id);
+    }
+  };
+  
   // Filtra gli utenti in base alla ricerca
   const filteredUsers = users
     ? users.filter(
@@ -318,13 +348,26 @@ export default function UserAdminPage() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleEditUser(user)}
-                            >
-                              <Edit className="h-4 w-4 mr-1" /> Modifica
-                            </Button>
+                            <div className="flex space-x-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEditUser(user)}
+                              >
+                                <Edit className="h-4 w-4 mr-1" /> Modifica
+                              </Button>
+                              {/* Non mostrare il pulsante elimina per gli utenti admin principali */}
+                              {user.id !== 1 && user.id !== 2 && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteUser(user.id)}
+                                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-1" /> Elimina
+                                </Button>
+                              )}
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}

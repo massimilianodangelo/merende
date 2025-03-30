@@ -13,6 +13,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>; // Per ottenere tutti gli utenti
   updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined>; // Per aggiornare i dati utente, inclusa la password
+  deleteUser(id: number): Promise<boolean>; // Per eliminare un utente
   
   // Product operations
   getProducts(): Promise<Product[]>;
@@ -255,6 +256,34 @@ export class MemStorage implements IStorage {
     const updatedUser = { ...existingUser, ...userData };
     this.users.set(id, updatedUser);
     return updatedUser;
+  }
+  
+  async deleteUser(id: number): Promise<boolean> {
+    // Non eliminare gli utenti amministratori predefiniti (ID 1 per l'admin principale e ID 2 per l'admin utenti)
+    if (id === 1 || id === 2) {
+      return false;
+    }
+    
+    const existingUser = this.users.get(id);
+    if (!existingUser) {
+      return false;
+    }
+    
+    // Elimina gli ordini collegati all'utente
+    const userOrders = Array.from(this.orders.values()).filter(order => order.userId === id);
+    for (const order of userOrders) {
+      // Elimina gli elementi dell'ordine
+      const orderItems = Array.from(this.orderItems.values()).filter(item => item.orderId === order.id);
+      for (const item of orderItems) {
+        this.orderItems.delete(item.id);
+      }
+      // Elimina l'ordine
+      this.orders.delete(order.id);
+    }
+    
+    // Elimina l'utente
+    this.users.delete(id);
+    return true;
   }
   
   async createUser(insertUser: InsertUser): Promise<User> {
