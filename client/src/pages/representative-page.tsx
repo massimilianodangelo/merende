@@ -125,21 +125,38 @@ export default function RepresentativePage() {
   }, {});
 
   // Ottieni un conteggio dei prodotti da tutti gli ordini completati
-  const productSummary = processedOrders
+  interface OrderItem {
+    productId: number;
+    quantity: number;
+    product?: {
+      name: string;
+      id: number;
+    };
+  }
+
+  interface ProductSummary {
+    [key: string]: { 
+      quantity: number; 
+      name: string;
+    };
+  }
+
+  const productSummary: ProductSummary = processedOrders
     .filter((order: OrderWithDetails) => order.status === OrderStatus.COMPLETED || order.status === OrderStatus.PROCESSING)
     .flatMap((order: OrderWithDetails) => order.items)
-    .reduce((acc: Record<number, { quantity: number, name: string }>, item: any) => {
+    .reduce((acc: ProductSummary, item: OrderItem) => {
       if (!item.product) return acc;
       
-      if (!acc[item.productId]) {
-        acc[item.productId] = {
+      const key = item.productId.toString();
+      if (!acc[key]) {
+        acc[key] = {
           quantity: 0,
           name: item.product.name
         };
       }
-      acc[item.productId].quantity += item.quantity;
+      acc[key].quantity += item.quantity;
       return acc;
-    }, {});
+    }, {} as ProductSummary);
 
   // Gestisci la selezione di un ordine
   const handleOrderSelect = (order: OrderWithDetails) => {
@@ -176,12 +193,15 @@ export default function RepresentativePage() {
           </TableHeader>
           <TableBody>
             {Object.entries(productSummary).length > 0 ? (
-              Object.entries(productSummary).map(([id, { name, quantity }]) => (
-                <TableRow key={id}>
-                  <TableCell className="font-medium">{name}</TableCell>
-                  <TableCell className="text-right">{quantity}</TableCell>
-                </TableRow>
-              ))
+              Object.entries(productSummary).map(entry => {
+                const [id, summary] = entry;
+                return (
+                  <TableRow key={id}>
+                    <TableCell className="font-medium">{summary.name}</TableCell>
+                    <TableCell className="text-right">{summary.quantity}</TableCell>
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={2} className="text-center py-4 text-muted-foreground">

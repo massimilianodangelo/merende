@@ -1,6 +1,80 @@
 import { users, type User, type InsertUser, products, type Product, type InsertProduct, orders, type Order, type InsertOrder, orderItems, type OrderItem, type InsertOrderItem } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import fs from 'fs';
+import path from 'path';
+
+// Crea una directory di storage se non esiste
+const storageDir = path.join(process.cwd(), 'storage');
+if (!fs.existsSync(storageDir)) {
+  fs.mkdirSync(storageDir);
+}
+
+// File di storage per i dati persistenti
+const dataFilePath = path.join(storageDir, 'app-data.json');
+
+// Funzioni di utilità per la persistenza dati
+const Storage = {
+  // Salva i dati nel file
+  saveData: (key: string, value: any): void => {
+    try {
+      let data: Record<string, any> = {};
+      if (fs.existsSync(dataFilePath)) {
+        const fileData = fs.readFileSync(dataFilePath, 'utf8');
+        if (fileData) {
+          data = JSON.parse(fileData);
+        }
+      }
+      data[key] = value;
+      fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2), 'utf8');
+      console.log(`Dati salvati con chiave: ${key}`);
+    } catch (error) {
+      console.error('Errore nel salvataggio dei dati:', error);
+    }
+  },
+
+  // Carica i dati dal file
+  loadData: (key: string): any => {
+    try {
+      if (fs.existsSync(dataFilePath)) {
+        const fileData = fs.readFileSync(dataFilePath, 'utf8');
+        if (fileData) {
+          const data = JSON.parse(fileData);
+          return data[key] || null;
+        }
+      }
+    } catch (error) {
+      console.error('Errore nel caricamento dei dati:', error);
+    }
+    return null;
+  },
+
+  // Elimina una chiave di dati
+  removeData: (key: string): void => {
+    try {
+      if (fs.existsSync(dataFilePath)) {
+        let data = JSON.parse(fs.readFileSync(dataFilePath, 'utf8'));
+        if (data && data[key]) {
+          delete data[key];
+          fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2), 'utf8');
+          console.log(`Dati rimossi con chiave: ${key}`);
+        }
+      }
+    } catch (error) {
+      console.error('Errore nella rimozione dei dati:', error);
+    }
+  },
+
+  // Pulisce tutti i dati
+  clearData: (): void => {
+    try {
+      fs.writeFileSync(dataFilePath, '{}', 'utf8');
+      console.log('Tutti i dati sono stati rimossi');
+    } catch (error) {
+      console.error('Errore nella pulizia dei dati:', error);
+    }
+  }
+};
 
 // Fix per l'errore di tipo per SessionStore
 type SessionStore = session.Store;
@@ -53,25 +127,78 @@ export class MemStorage implements IStorage {
   private orderItemId: number;
 
   constructor() {
-    this.users = new Map();
-    this.products = new Map();
-    this.orders = new Map();
-    this.orderItems = new Map();
-    
-    this.userId = 1;
-    this.productId = 1;
-    this.orderId = 1;
-    this.orderItemId = 1;
-    
-    // Aggiungi l'utente amministratore predefinito
-    this.createAdminUser();
+    // Carica i dati se esistono
+    try {
+      const savedData = Storage.loadData('appData');
+      if (savedData) {
+        this.users = new Map(savedData.users);
+        this.products = new Map(savedData.products);
+        this.orders = new Map(savedData.orders);
+        this.orderItems = new Map(savedData.orderItems);
+        this.userId = savedData.userId;
+        this.productId = savedData.productId;
+        this.orderId = savedData.orderId;
+        this.orderItemId = savedData.orderItemId;
+        console.log("Dati caricati dal file di storage");
+      } else {
+        // Inizializza nuovi dati se non esiste un salvataggio
+        this.users = new Map();
+        this.products = new Map();
+        this.orders = new Map();
+        this.orderItems = new Map();
+        this.userId = 1;
+        this.productId = 1;
+        this.orderId = 1;
+        this.orderItemId = 1;
+        
+        // Aggiungi l'utente amministratore predefinito
+        this.createAdminUser();
+        
+        // Initialize with some sample products
+        this.initializeProducts();
+        console.log("Nuovi dati inizializzati");
+      }
+    } catch (error) {
+      console.error("Errore nel caricamento dei dati:", error);
+      // Fallback a un nuovo stato se c'è un errore
+      this.users = new Map();
+      this.products = new Map();
+      this.orders = new Map();
+      this.orderItems = new Map();
+      this.userId = 1;
+      this.productId = 1;
+      this.orderId = 1;
+      this.orderItemId = 1;
+      
+      // Aggiungi l'utente amministratore predefinito
+      this.createAdminUser();
+      
+      // Initialize with some sample products
+      this.initializeProducts();
+    }
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // 24 hours
     });
-    
-    // Initialize with some sample products
-    this.initializeProducts();
+  }
+  
+  // Salva i dati nel file di storage
+  private saveData() {
+    try {
+      const dataToSave = {
+        users: Array.from(this.users.entries()),
+        products: Array.from(this.products.entries()),
+        orders: Array.from(this.orders.entries()),
+        orderItems: Array.from(this.orderItems.entries()),
+        userId: this.userId,
+        productId: this.productId,
+        orderId: this.orderId,
+        orderItemId: this.orderItemId
+      };
+      Storage.saveData('appData', dataToSave);
+    } catch (error) {
+      console.error("Errore nel salvataggio dei dati:", error);
+    }
   }
 
   // Initialize sample products
@@ -255,6 +382,7 @@ export class MemStorage implements IStorage {
     
     const updatedUser = { ...existingUser, ...userData };
     this.users.set(id, updatedUser);
+    this.saveData(); // Salva dopo l'aggiornamento dell'utente
     return updatedUser;
   }
   
@@ -283,6 +411,7 @@ export class MemStorage implements IStorage {
     
     // Elimina l'utente
     this.users.delete(id);
+    this.saveData(); // Salva dopo l'eliminazione dell'utente
     return true;
   }
   
@@ -310,6 +439,7 @@ export class MemStorage implements IStorage {
     };
     
     this.users.set(id, user);
+    this.saveData(); // Salva i dati dopo aver creato un utente
     return user;
   }
 
@@ -339,6 +469,7 @@ export class MemStorage implements IStorage {
       available: insertProduct.available !== undefined ? insertProduct.available : true 
     };
     this.products.set(id, product);
+    this.saveData(); // Salva dopo la creazione di un prodotto
     return product;
   }
 
@@ -350,6 +481,7 @@ export class MemStorage implements IStorage {
     
     const updatedProduct = { ...existingProduct, ...product };
     this.products.set(id, updatedProduct);
+    this.saveData(); // Salva dopo l'aggiornamento di un prodotto
     return updatedProduct;
   }
 
@@ -360,6 +492,7 @@ export class MemStorage implements IStorage {
     }
     
     this.products.delete(id);
+    this.saveData(); // Salva dopo l'eliminazione di un prodotto
     return true;
   }
 
@@ -418,6 +551,7 @@ export class MemStorage implements IStorage {
       status: insertOrder.status || "pending"
     };
     this.orders.set(id, order);
+    this.saveData(); // Salva dopo la creazione di un ordine
     return order;
   }
 
@@ -429,6 +563,7 @@ export class MemStorage implements IStorage {
     
     const updatedOrder = { ...existingOrder, status };
     this.orders.set(id, updatedOrder);
+    this.saveData(); // Salva dopo l'aggiornamento dello stato di un ordine
     return updatedOrder;
   }
 
@@ -443,6 +578,7 @@ export class MemStorage implements IStorage {
     const id = this.orderItemId++;
     const orderItem: OrderItem = { ...insertOrderItem, id };
     this.orderItems.set(id, orderItem);
+    this.saveData(); // Salva dopo la creazione di un elemento dell'ordine
     return orderItem;
   }
 }
