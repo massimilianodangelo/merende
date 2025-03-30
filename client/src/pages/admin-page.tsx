@@ -836,6 +836,10 @@ export default function AdminPage() {
                 ) : (
                   <div className="space-y-6">
                     {Object.entries(ordersByClass)
+                      // Filtriamo i record classRoom vuoti o N/A
+                      .filter(([classRoom, _]) => {
+                        return classRoom && classRoom.trim() !== "" && classRoom !== "N/A";
+                      })
                       .sort(([classRoomA], [classRoomB]) => {
                         // Estrai numeri e lettere dalla classe (es. 1A -> [1, "A"])
                         const [numA, letterA] = [parseInt(classRoomA.match(/\d+/)?.[0] || "0"), classRoomA.match(/[A-Z]+/)?.[0] || ""];
