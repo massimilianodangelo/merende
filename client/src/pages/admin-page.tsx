@@ -287,6 +287,12 @@ export default function AdminPage() {
   // Group orders by class
   const ordersByClass = filteredOrders.reduce((acc, order) => {
     const classRoom = order.user && order.user.classRoom ? order.user.classRoom : "";
+    
+    // Ignora ordini senza classe assegnata
+    if (!classRoom) {
+      return acc;
+    }
+    
     if (!acc[classRoom]) {
       acc[classRoom] = [];
     }
