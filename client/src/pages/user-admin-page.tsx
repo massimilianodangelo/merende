@@ -19,6 +19,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -58,6 +59,8 @@ import {
   Trash2,
   User as UserIcon,
   LogOut,
+  Plus,
+  X,
   ChevronDown,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -121,6 +124,31 @@ export default function UserAdminPage() {
   const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithoutPassword | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  // Stato per gestire le classi disponibili
+  const [availableClasses, setAvailableClasses] = useState<string[]>([
+    // Prima A-E
+    "1A", "2A", "3A", "4A", "5A",
+    // Prima B-E
+    "1B", "2B", "3B", "4B", "5B",
+    // Prima C-E
+    "1C", "2C", "3C", "4C", "5C",
+    // Prima D-E
+    "1D", "2D", "3D", "4D", "5D",
+    // Prima E-E
+    "1E", "2E", "3E", "4E", "5E",
+    // Prima F-F
+    "1F", "2F", "3F", "4F", "5F",
+    // Prima G-G
+    "1G", "2G", "3G",
+    // Prima H-H
+    "1H", "2H", "3H", "4H", "5H",
+    // Classe L
+    "2L", "3L"
+  ]);
+  
+  // Stato per la nuova classe da aggiungere
+  const [newClass, setNewClass] = useState("");
+  const [isManageClassesOpen, setIsManageClassesOpen] = useState(false);
 
   // Recupera tutti gli utenti
   const { data: apiUsers, isLoading, refetch } = useQuery<UserWithoutPassword[]>({
@@ -317,6 +345,54 @@ export default function UserAdminPage() {
     }
   };
   
+  // Funzioni per gestire le classi
+  const handleAddClass = () => {
+    if (!newClass.trim()) {
+      toast({
+        title: "Errore",
+        description: "Inserisci un nome valido per la classe",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (availableClasses.includes(newClass.trim())) {
+      toast({
+        title: "Errore",
+        description: "Questa classe esiste già",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setAvailableClasses(prev => [...prev, newClass.trim()].sort());
+    setNewClass("");
+    toast({
+      title: "Classe aggiunta",
+      description: `La classe ${newClass.trim()} è stata aggiunta con successo.`,
+    });
+  };
+  
+  const handleRemoveClass = (className: string) => {
+    // Verifica se ci sono utenti in questa classe
+    const usersInClass = users?.filter(u => u.classRoom === className) || [];
+    
+    if (usersInClass.length > 0) {
+      toast({
+        title: "Impossibile rimuovere",
+        description: `Ci sono ${usersInClass.length} utenti assegnati a questa classe. Riassegnali prima di eliminarla.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setAvailableClasses(prev => prev.filter(c => c !== className));
+    toast({
+      title: "Classe rimossa",
+      description: `La classe ${className} è stata rimossa con successo.`,
+    });
+  };
+  
   // Filtra gli utenti in base alla ricerca
   const filteredUsers = users
     ? users.filter(
@@ -394,6 +470,14 @@ export default function UserAdminPage() {
                   >
                     <RefreshCw className="h-4 w-4" />
                   </Button>
+                  {user?.isUserAdmin && (
+                    <Button 
+                      onClick={() => setIsManageClassesOpen(true)} 
+                      variant="outline"
+                    >
+                      Gestione Classi
+                    </Button>
+                  )}
                   <Button onClick={() => setIsCreateUserDialogOpen(true)}>
                     <UserPlus className="mr-2 h-4 w-4" />
                     Nuovo Utente
@@ -401,97 +485,256 @@ export default function UserAdminPage() {
                 </div>
               </div>
 
-              {/* Tabella utenti */}
-              {isLoading ? (
-                <div className="flex items-center justify-center h-64">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : filteredUsers && filteredUsers.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Nome</TableHead>
-                        <TableHead>Cognome</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Classe</TableHead>
-                        <TableHead>Ruoli</TableHead>
-                        <TableHead>Azioni</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredUsers.map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell>{user.id}</TableCell>
-                          <TableCell>{user.firstName}</TableCell>
-                          <TableCell>{user.lastName}</TableCell>
-                          <TableCell>{user.username}</TableCell>
-                          <TableCell>{user.classRoom}</TableCell>
-                          <TableCell>
-                            <div className="flex flex-col space-y-1">
-                              {user.isAdmin && (
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                  Amministratore
-                                </span>
-                              )}
-                              {user.isUserAdmin && (
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                  Admin Utenti
-                                </span>
-                              )}
-                              {user.isRepresentative && (
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                  Rappresentante
-                                </span>
-                              )}
-                              {!user.isAdmin && !user.isRepresentative && !user.isUserAdmin && (
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                  Studente
-                                </span>
-                              )}
+              {/* Tabs per visualizzare gli utenti */}
+              <Tabs defaultValue="list">
+                <TabsList className="mb-4">
+                  <TabsTrigger value="list">Lista completa</TabsTrigger>
+                  <TabsTrigger value="byClass">Utenti per classe</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="list">
+                  {/* Tabella utenti */}
+                  {isLoading ? (
+                    <div className="flex items-center justify-center h-64">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  ) : filteredUsers && filteredUsers.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Nome</TableHead>
+                            <TableHead>Cognome</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Classe</TableHead>
+                            <TableHead>Ruoli</TableHead>
+                            <TableHead>Azioni</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredUsers.map((user) => (
+                            <TableRow key={user.id}>
+                              <TableCell>{user.id}</TableCell>
+                              <TableCell>{user.firstName}</TableCell>
+                              <TableCell>{user.lastName}</TableCell>
+                              <TableCell>{user.username}</TableCell>
+                              <TableCell>{user.classRoom}</TableCell>
+                              <TableCell>
+                                <div className="flex flex-col space-y-1">
+                                  {user.isAdmin && (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                      Amministratore
+                                    </span>
+                                  )}
+                                  {user.isUserAdmin && (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                      Admin Utenti
+                                    </span>
+                                  )}
+                                  {user.isRepresentative && (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                      Rappresentante
+                                    </span>
+                                  )}
+                                  {!user.isAdmin && !user.isRepresentative && !user.isUserAdmin && (
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                      Studente
+                                    </span>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex space-x-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleEditUser(user)}
+                                  >
+                                    <Edit className="h-4 w-4 mr-1" /> Modifica
+                                  </Button>
+                                  {/* Non mostrare il pulsante elimina per gli utenti admin principali */}
+                                  {user.id !== 1 && user.id !== 2 && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleDeleteUser(user.id)}
+                                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                    >
+                                      <Trash2 className="h-4 w-4 mr-1" /> Elimina
+                                    </Button>
+                                  )}
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-64">
+                      <div className="text-center">
+                        <AlertCircle className="mx-auto h-8 w-8 text-gray-400" />
+                        <h3 className="mt-2 text-sm font-medium text-gray-900">Nessun utente trovato</h3>
+                        <p className="mt-1 text-sm text-gray-500">
+                          {searchQuery
+                            ? "Nessun utente corrisponde ai criteri di ricerca."
+                            : "Non ci sono ancora utenti nel sistema."}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="byClass">
+                  {isLoading ? (
+                    <div className="flex items-center justify-center h-64">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  ) : filteredUsers && filteredUsers.length > 0 ? (
+                    <div className="space-y-8">
+                      {/* Raggruppa utenti per classe */}
+                      {Array.from(
+                        new Set(
+                          filteredUsers
+                            .map(user => user.classRoom)
+                            .filter(className => className !== "Admin") // Filtra classe Admin
+                        )
+                      ).sort().map(className => {
+                        const usersInClass = filteredUsers.filter(u => u.classRoom === className);
+                        return (
+                          <div key={className} className="bg-white rounded-lg p-4 shadow-sm border">
+                            <h3 className="text-lg font-medium mb-4">Classe {className} ({usersInClass.length} utenti)</h3>
+                            <div className="overflow-x-auto">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Nome</TableHead>
+                                    <TableHead>Cognome</TableHead>
+                                    <TableHead>Email</TableHead>
+                                    <TableHead>Ruoli</TableHead>
+                                    <TableHead>Azioni</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {usersInClass.map((user) => (
+                                    <TableRow key={user.id}>
+                                      <TableCell>{user.firstName}</TableCell>
+                                      <TableCell>{user.lastName}</TableCell>
+                                      <TableCell>{user.username}</TableCell>
+                                      <TableCell>
+                                        <div className="flex flex-col space-y-1">
+                                          {user.isRepresentative && (
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                              Rappresentante
+                                            </span>
+                                          )}
+                                          {!user.isAdmin && !user.isRepresentative && !user.isUserAdmin && (
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                              Studente
+                                            </span>
+                                          )}
+                                        </div>
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="flex space-x-2">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleEditUser(user)}
+                                          >
+                                            <Edit className="h-4 w-4 mr-1" /> Modifica
+                                          </Button>
+                                          {user.id !== 1 && user.id !== 2 && (
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => handleDeleteUser(user.id)}
+                                              className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                            >
+                                              <Trash2 className="h-4 w-4 mr-1" /> Elimina
+                                            </Button>
+                                          )}
+                                        </div>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
                             </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex space-x-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEditUser(user)}
-                              >
-                                <Edit className="h-4 w-4 mr-1" /> Modifica
-                              </Button>
-                              {/* Non mostrare il pulsante elimina per gli utenti admin principali */}
-                              {user.id !== 1 && user.id !== 2 && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleDeleteUser(user.id)}
-                                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                >
-                                  <Trash2 className="h-4 w-4 mr-1" /> Elimina
-                                </Button>
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center h-64">
-                  <div className="text-center">
-                    <AlertCircle className="mx-auto h-8 w-8 text-gray-400" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900">Nessun utente trovato</h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      {searchQuery
-                        ? "Nessun utente corrisponde ai criteri di ricerca."
-                        : "Non ci sono ancora utenti nel sistema."}
-                    </p>
-                  </div>
-                </div>
-              )}
+                          </div>
+                        );
+                      })}
+                      
+                      {/* Sezione Amministratori */}
+                      {filteredUsers.some(user => user.classRoom === "Admin") && (
+                        <div className="bg-white rounded-lg p-4 shadow-sm border">
+                          <h3 className="text-lg font-medium mb-4">Amministratori del sistema</h3>
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Nome</TableHead>
+                                  <TableHead>Cognome</TableHead>
+                                  <TableHead>Email</TableHead>
+                                  <TableHead>Ruoli</TableHead>
+                                  <TableHead>Azioni</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {filteredUsers.filter(u => u.classRoom === "Admin").map((user) => (
+                                  <TableRow key={user.id}>
+                                    <TableCell>{user.firstName}</TableCell>
+                                    <TableCell>{user.lastName}</TableCell>
+                                    <TableCell>{user.username}</TableCell>
+                                    <TableCell>
+                                      <div className="flex flex-col space-y-1">
+                                        {user.isAdmin && (
+                                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            Amministratore
+                                          </span>
+                                        )}
+                                        {user.isUserAdmin && (
+                                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            Admin Utenti
+                                          </span>
+                                        )}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="flex space-x-2">
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => handleEditUser(user)}
+                                        >
+                                          <Edit className="h-4 w-4 mr-1" /> Modifica
+                                        </Button>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-64">
+                      <div className="text-center">
+                        <AlertCircle className="mx-auto h-8 w-8 text-gray-400" />
+                        <h3 className="mt-2 text-sm font-medium text-gray-900">Nessun utente trovato</h3>
+                        <p className="mt-1 text-sm text-gray-500">
+                          {searchQuery
+                            ? "Nessun utente corrisponde ai criteri di ricerca."
+                            : "Non ci sono ancora utenti nel sistema."}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
             </div>
           </div>
         </div>
@@ -580,63 +823,11 @@ export default function UserAdminPage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {/* Prima A-E */}
-                          <SelectItem value="1A">1A</SelectItem>
-                          <SelectItem value="2A">2A</SelectItem>
-                          <SelectItem value="3A">3A</SelectItem>
-                          <SelectItem value="4A">4A</SelectItem>
-                          <SelectItem value="5A">5A</SelectItem>
-                          
-                          {/* Prima B-E */}
-                          <SelectItem value="1B">1B</SelectItem>
-                          <SelectItem value="2B">2B</SelectItem>
-                          <SelectItem value="3B">3B</SelectItem>
-                          <SelectItem value="4B">4B</SelectItem>
-                          <SelectItem value="5B">5B</SelectItem>
-                          
-                          {/* Prima C-E */}
-                          <SelectItem value="1C">1C</SelectItem>
-                          <SelectItem value="2C">2C</SelectItem>
-                          <SelectItem value="3C">3C</SelectItem>
-                          <SelectItem value="4C">4C</SelectItem>
-                          <SelectItem value="5C">5C</SelectItem>
-                          
-                          {/* Prima D-E */}
-                          <SelectItem value="1D">1D</SelectItem>
-                          <SelectItem value="2D">2D</SelectItem>
-                          <SelectItem value="3D">3D</SelectItem>
-                          <SelectItem value="4D">4D</SelectItem>
-                          <SelectItem value="5D">5D</SelectItem>
-                          
-                          {/* Prima E-E */}
-                          <SelectItem value="1E">1E</SelectItem>
-                          <SelectItem value="2E">2E</SelectItem>
-                          <SelectItem value="3E">3E</SelectItem>
-                          <SelectItem value="4E">4E</SelectItem>
-                          <SelectItem value="5E">5E</SelectItem>
-                          
-                          {/* Prima F-F */}
-                          <SelectItem value="1F">1F</SelectItem>
-                          <SelectItem value="2F">2F</SelectItem>
-                          <SelectItem value="3F">3F</SelectItem>
-                          <SelectItem value="4F">4F</SelectItem>
-                          <SelectItem value="5F">5F</SelectItem>
-                          
-                          {/* Prima G-G */}
-                          <SelectItem value="1G">1G</SelectItem>
-                          <SelectItem value="2G">2G</SelectItem>
-                          <SelectItem value="3G">3G</SelectItem>
-                          
-                          {/* Prima H-H */}
-                          <SelectItem value="1H">1H</SelectItem>
-                          <SelectItem value="2H">2H</SelectItem>
-                          <SelectItem value="3H">3H</SelectItem>
-                          <SelectItem value="4H">4H</SelectItem>
-                          <SelectItem value="5H">5H</SelectItem>
-                          
-                          {/* Classe L */}
-                          <SelectItem value="2L">2L</SelectItem>
-                          <SelectItem value="3L">3L</SelectItem>
+                          {availableClasses.sort().map(className => (
+                            <SelectItem key={className} value={className}>
+                              {className}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -777,63 +968,11 @@ export default function UserAdminPage() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {/* Prima A-E */}
-                          <SelectItem value="1A">1A</SelectItem>
-                          <SelectItem value="2A">2A</SelectItem>
-                          <SelectItem value="3A">3A</SelectItem>
-                          <SelectItem value="4A">4A</SelectItem>
-                          <SelectItem value="5A">5A</SelectItem>
-                          
-                          {/* Prima B-E */}
-                          <SelectItem value="1B">1B</SelectItem>
-                          <SelectItem value="2B">2B</SelectItem>
-                          <SelectItem value="3B">3B</SelectItem>
-                          <SelectItem value="4B">4B</SelectItem>
-                          <SelectItem value="5B">5B</SelectItem>
-                          
-                          {/* Prima C-E */}
-                          <SelectItem value="1C">1C</SelectItem>
-                          <SelectItem value="2C">2C</SelectItem>
-                          <SelectItem value="3C">3C</SelectItem>
-                          <SelectItem value="4C">4C</SelectItem>
-                          <SelectItem value="5C">5C</SelectItem>
-                          
-                          {/* Prima D-E */}
-                          <SelectItem value="1D">1D</SelectItem>
-                          <SelectItem value="2D">2D</SelectItem>
-                          <SelectItem value="3D">3D</SelectItem>
-                          <SelectItem value="4D">4D</SelectItem>
-                          <SelectItem value="5D">5D</SelectItem>
-                          
-                          {/* Prima E-E */}
-                          <SelectItem value="1E">1E</SelectItem>
-                          <SelectItem value="2E">2E</SelectItem>
-                          <SelectItem value="3E">3E</SelectItem>
-                          <SelectItem value="4E">4E</SelectItem>
-                          <SelectItem value="5E">5E</SelectItem>
-                          
-                          {/* Prima F-F */}
-                          <SelectItem value="1F">1F</SelectItem>
-                          <SelectItem value="2F">2F</SelectItem>
-                          <SelectItem value="3F">3F</SelectItem>
-                          <SelectItem value="4F">4F</SelectItem>
-                          <SelectItem value="5F">5F</SelectItem>
-                          
-                          {/* Prima G-G */}
-                          <SelectItem value="1G">1G</SelectItem>
-                          <SelectItem value="2G">2G</SelectItem>
-                          <SelectItem value="3G">3G</SelectItem>
-                          
-                          {/* Prima H-H */}
-                          <SelectItem value="1H">1H</SelectItem>
-                          <SelectItem value="2H">2H</SelectItem>
-                          <SelectItem value="3H">3H</SelectItem>
-                          <SelectItem value="4H">4H</SelectItem>
-                          <SelectItem value="5H">5H</SelectItem>
-                          
-                          {/* Classe L */}
-                          <SelectItem value="2L">2L</SelectItem>
-                          <SelectItem value="3L">3L</SelectItem>
+                          {availableClasses.sort().map(className => (
+                            <SelectItem key={className} value={className}>
+                              {className}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -930,6 +1069,62 @@ export default function UserAdminPage() {
               </DialogFooter>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog per gestire le classi */}
+      <Dialog open={isManageClassesOpen} onOpenChange={setIsManageClassesOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Gestione Classi</DialogTitle>
+            <DialogDescription>
+              Aggiungi, visualizza o rimuovi classi dal sistema.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center space-x-2">
+              <Input
+                placeholder="Nuova classe (es. 5Z)"
+                value={newClass}
+                onChange={e => setNewClass(e.target.value)}
+                className="flex-1"
+              />
+              <Button 
+                onClick={handleAddClass}
+                size="sm"
+                variant="outline"
+              >
+                <Plus className="h-4 w-4 mr-1" /> Aggiungi
+              </Button>
+            </div>
+            
+            <Separator className="my-4" />
+            
+            <div className="text-sm font-medium mb-2">Classi disponibili</div>
+            
+            <div className="max-h-[300px] overflow-y-auto">
+              <div className="grid grid-cols-3 gap-2">
+                {availableClasses.sort().map(className => (
+                  <div key={className} className="flex items-center justify-between rounded border p-2">
+                    <span className="font-medium">{className}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleRemoveClass(className)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsManageClassesOpen(false)}>
+              Chiudi
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
