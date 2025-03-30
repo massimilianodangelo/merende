@@ -61,21 +61,43 @@ const createUserSchema = z.object({
   password: z.string().min(8, "La password deve avere almeno 8 caratteri"),
   firstName: z.string().min(2, "Il nome deve avere almeno 2 caratteri"),
   lastName: z.string().min(2, "Il cognome deve avere almeno 2 caratteri"),
-  classRoom: z.string().min(1, "Seleziona una classe"),
+  classRoom: z.string(),
   isRepresentative: z.boolean().default(false),
   isAdmin: z.boolean().default(false),
   isUserAdmin: z.boolean().default(false),
+}).refine((data) => {
+  // Se l'utente è amministratore (isAdmin o isUserAdmin), la classe non è obbligatoria
+  // altrimenti è obbligatorio selezionare una classe
+  if (data.isAdmin || data.isUserAdmin) {
+    return true;
+  } else {
+    return data.classRoom.length > 0;
+  }
+}, {
+  message: "Seleziona una classe (obbligatorio per utenti non amministratori)",
+  path: ["classRoom"]
 });
 
 // Schema per la modifica di un utente esistente
 const updateUserSchema = z.object({
   firstName: z.string().min(2, "Il nome deve avere almeno 2 caratteri"),
   lastName: z.string().min(2, "Il cognome deve avere almeno 2 caratteri"),
-  classRoom: z.string().min(1, "Seleziona una classe"),
+  classRoom: z.string(),
   isRepresentative: z.boolean().default(false),
   isAdmin: z.boolean().default(false),
   isUserAdmin: z.boolean().default(false),
   password: z.string().optional(),
+}).refine((data) => {
+  // Se l'utente è amministratore (isAdmin o isUserAdmin), la classe non è obbligatoria
+  // altrimenti è obbligatorio selezionare una classe
+  if (data.isAdmin || data.isUserAdmin) {
+    return true;
+  } else {
+    return data.classRoom.length > 0;
+  }
+}, {
+  message: "Seleziona una classe (obbligatorio per utenti non amministratori)",
+  path: ["classRoom"]
 });
 
 type UserWithoutPassword = Omit<User, "password">;
@@ -499,39 +521,38 @@ export default function UserAdminPage() {
                 )}
               />
 
-              <FormField
-                control={createUserForm.control}
-                name="classRoom"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Classe</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleziona classe" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {/* Mostra l'opzione Admin solo quando si sta creando un utente amministratore */}
-                        {createUserForm.watch("isUserAdmin") && (
-                          <SelectItem value="Admin">Amministrazione</SelectItem>
-                        )}
-                        <SelectItem value="1A">1A</SelectItem>
-                        <SelectItem value="1B">1B</SelectItem>
-                        <SelectItem value="2A">2A</SelectItem>
-                        <SelectItem value="2B">2B</SelectItem>
-                        <SelectItem value="3A">3A</SelectItem>
-                        <SelectItem value="3B">3B</SelectItem>
-                        <SelectItem value="4A">4A</SelectItem>
-                        <SelectItem value="4B">4B</SelectItem>
-                        <SelectItem value="5A">5A</SelectItem>
-                        <SelectItem value="5B">5B</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Campo classe (mostrato solo per utenti non amministratori) */}
+              {!(createUserForm.watch("isAdmin") || createUserForm.watch("isUserAdmin")) && (
+                <FormField
+                  control={createUserForm.control}
+                  name="classRoom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Classe</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleziona classe" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="1A">1A</SelectItem>
+                          <SelectItem value="1B">1B</SelectItem>
+                          <SelectItem value="2A">2A</SelectItem>
+                          <SelectItem value="2B">2B</SelectItem>
+                          <SelectItem value="3A">3A</SelectItem>
+                          <SelectItem value="3B">3B</SelectItem>
+                          <SelectItem value="4A">4A</SelectItem>
+                          <SelectItem value="4B">4B</SelectItem>
+                          <SelectItem value="5A">5A</SelectItem>
+                          <SelectItem value="5B">5B</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <Separator />
               <div className="text-sm font-medium mb-2">Ruoli</div>
@@ -650,39 +671,38 @@ export default function UserAdminPage() {
                 />
               </div>
 
-              <FormField
-                control={editUserForm.control}
-                name="classRoom"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Classe</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleziona classe" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {/* Mostra l'opzione Admin solo quando si sta modificando un utente amministratore */}
-                        {editUserForm.watch("isUserAdmin") && (
-                          <SelectItem value="Admin">Amministrazione</SelectItem>
-                        )}
-                        <SelectItem value="1A">1A</SelectItem>
-                        <SelectItem value="1B">1B</SelectItem>
-                        <SelectItem value="2A">2A</SelectItem>
-                        <SelectItem value="2B">2B</SelectItem>
-                        <SelectItem value="3A">3A</SelectItem>
-                        <SelectItem value="3B">3B</SelectItem>
-                        <SelectItem value="4A">4A</SelectItem>
-                        <SelectItem value="4B">4B</SelectItem>
-                        <SelectItem value="5A">5A</SelectItem>
-                        <SelectItem value="5B">5B</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Campo classe (mostrato solo per utenti non amministratori) */}
+              {!(editUserForm.watch("isAdmin") || editUserForm.watch("isUserAdmin")) && (
+                <FormField
+                  control={editUserForm.control}
+                  name="classRoom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Classe</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleziona classe" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="1A">1A</SelectItem>
+                          <SelectItem value="1B">1B</SelectItem>
+                          <SelectItem value="2A">2A</SelectItem>
+                          <SelectItem value="2B">2B</SelectItem>
+                          <SelectItem value="3A">3A</SelectItem>
+                          <SelectItem value="3B">3B</SelectItem>
+                          <SelectItem value="4A">4A</SelectItem>
+                          <SelectItem value="4B">4B</SelectItem>
+                          <SelectItem value="5A">5A</SelectItem>
+                          <SelectItem value="5B">5B</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={editUserForm.control}
