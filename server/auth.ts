@@ -58,10 +58,13 @@ export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "school-snack-secret-key",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: storage.sessionStore,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
+      sameSite: 'lax',
+      secure: false, // Replit verrà eseguito su HTTP in ambiente di sviluppo
+      httpOnly: true
     }
   };
 
