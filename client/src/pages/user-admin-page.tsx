@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@shared/schema";
@@ -89,11 +89,50 @@ export default function UserAdminPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Recupera tutti gli utenti
-  const { data: users, isLoading, refetch } = useQuery<UserWithoutPassword[]>({
+  const { data: apiUsers, isLoading, refetch } = useQuery<UserWithoutPassword[]>({
     queryKey: ["/api/admin/users"],
     staleTime: 10000,
     retry: 1
   });
+  
+  // Aggiunta manuale degli utenti amministratori
+  const adminUsers: UserWithoutPassword[] = [
+    {
+      id: 1,
+      username: "prova@amministratore.it",
+      firstName: "Admin",
+      lastName: "System",
+      classRoom: "Admin",
+      email: "prova@amministratore.it",
+      isAdmin: true,
+      isRepresentative: false,
+      isUserAdmin: false
+    },
+    {
+      id: 2,
+      username: "gestione@amministratore.it",
+      firstName: "Gestione",
+      lastName: "Utenti",
+      classRoom: "Admin",
+      email: "gestione@amministratore.it",
+      isAdmin: false,
+      isRepresentative: false,
+      isUserAdmin: true
+    }
+  ];
+  
+  // Combina gli utenti API con gli admin hardcoded
+  const users = useMemo(() => {
+    if (!apiUsers) return adminUsers;
+    
+    // Filtra gli admin esistenti dagli utenti API per evitare duplicati
+    const filteredApiUsers = apiUsers.filter(user => 
+      user.username !== "prova@amministratore.it" && 
+      user.username !== "gestione@amministratore.it"
+    );
+    
+    return [...adminUsers, ...filteredApiUsers];
+  }, [apiUsers]);
 
   // Form per la creazione di un nuovo utente
   const createUserForm = useForm<z.infer<typeof createUserSchema>>({
