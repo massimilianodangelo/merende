@@ -232,29 +232,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Log per debug
       console.log("GET /api/admin/orders - Authentication status:", req.isAuthenticated(), "- User:", req.user);
 
-      // Get today's date
-      const today = new Date();
-      const todayOrders = await storage.getOrdersByDate(today);
+      // Per l'amministratore, otteniamo TUTTI gli ordini invece di filtrare per data
+      const allOrders = await storage.getOrders();
+      console.log(`Ottenuti ${allOrders.length} ordini totali per l'amministratore`);
       
       // For each order, get the order items and user info
       const ordersWithDetails = await Promise.all(
-        todayOrders.map(async (order) => {
+        allOrders.map(async (order) => {
           const items = await storage.getOrderItems(order.id);
           const user = await storage.getUser(order.userId);
           
           return {
             ...order,
             items,
-            user: {
-              id: user?.id,
-              firstName: user?.firstName,
-              lastName: user?.lastName,
-              classRoom: user?.classRoom
+            user: user ? {
+              id: user.id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              classRoom: user.classRoom
+            } : {
+              id: 0,
+              firstName: "Utente",
+              lastName: "Sconosciuto",
+              classRoom: "N/A"
             }
           };
         })
       );
       
+      console.log(`Inviati ${ordersWithDetails.length} ordini completi all'amministratore`);
       res.json(ordersWithDetails);
     } catch (error) {
       console.error("Error fetching admin orders:", error);

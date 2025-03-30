@@ -244,6 +244,28 @@
           "id": 2,
           "createdAt": "2025-03-30T15:24:14.872Z"
         }
+      ],
+      [
+        3,
+        {
+          "userId": 6,
+          "status": "pending",
+          "total": 4,
+          "orderDate": "2025-03-30T15:28:59.977Z",
+          "id": 3,
+          "createdAt": "2025-03-30T15:29:00.772Z"
+        }
+      ],
+      [
+        4,
+        {
+          "userId": 5,
+          "status": "pending",
+          "total": 2.5,
+          "orderDate": "2025-03-30T15:29:32.778Z",
+          "id": 4,
+          "createdAt": "2025-03-30T15:29:33.570Z"
+        }
       ]
     ],
     "orderItems": [
@@ -276,11 +298,41 @@
           "price": 2,
           "id": 3
         }
+      ],
+      [
+        4,
+        {
+          "orderId": 3,
+          "productId": 2,
+          "quantity": 1,
+          "price": 2,
+          "id": 4
+        }
+      ],
+      [
+        5,
+        {
+          "orderId": 3,
+          "productId": 1,
+          "quantity": 1,
+          "price": 2,
+          "id": 5
+        }
+      ],
+      [
+        6,
+        {
+          "orderId": 4,
+          "productId": 10,
+          "quantity": 1,
+          "price": 2.5,
+          "id": 6
+        }
       ]
     ],
     "userId": 7,
     "productId": 14,
-    "orderId": 3,
-    "orderItemId": 4
+    "orderId": 5,
+    "orderItemId": 7
   }
 }
