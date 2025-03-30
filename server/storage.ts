@@ -383,17 +383,25 @@ export class MemStorage implements IStorage {
   }
   
   async getOrdersByClass(classroom: string): Promise<Order[]> {
+    console.log(`getOrdersByClass chiamato con classe: "${classroom}"`);
+    
     const orders = Array.from(this.orders.values());
     const result: Order[] = [];
     
     // Per ogni ordine, ottieni l'utente e verifica la classe
     for (const order of orders) {
       const user = this.users.get(order.userId);
-      if (user && user.classRoom === classroom) {
+      console.log(`Verificando ordine ${order.id}, utente: ${user?.firstName} ${user?.lastName}, classe utente: "${user?.classRoom}"`);
+      
+      // Verifica case insensitive per maggiore flessibilità
+      if (user && user.classRoom && classroom && 
+          user.classRoom.toLowerCase() === classroom.toLowerCase()) {
+        console.log(`Ordine ${order.id} aggiunto ai risultati`);
         result.push(order);
       }
     }
     
+    console.log(`getOrdersByClass: trovati ${result.length} ordini per la classe ${classroom}`);
     return result;
   }
 
