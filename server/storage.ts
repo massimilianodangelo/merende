@@ -219,9 +219,9 @@ export class MemStorage implements IStorage {
         lastName: "Utenti",
         classRoom: "Admin",
         email: "gestione@amministratore.it",
-        isAdmin: true,
+        isAdmin: false, // Non è un amministratore generale
         isRepresentative: false,
-        isUserAdmin: true // Aggiungiamo questo flag per identificare gli admin di gestione utenti
+        isUserAdmin: true // Flag per identificare gli admin di gestione utenti
       };
       
       const user = await this.createUser(userAdminUser);
@@ -261,8 +261,7 @@ export class MemStorage implements IStorage {
     const id = this.userId++;
     
     // Controlla se è un amministratore basato sull'email
-    const isAdmin = insertUser.email === 'prova@amministratore.it' || 
-                   insertUser.email === 'gestione@amministratore.it' || 
+    const isAdmin = insertUser.email === 'prova@amministratore.it' ||
                    !!insertUser.isAdmin;
     
     // Controlla se è un amministratore di gestione utenti
