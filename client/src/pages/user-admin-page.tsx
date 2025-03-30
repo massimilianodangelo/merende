@@ -327,6 +327,35 @@ export default function UserAdminPage() {
     }
   };
   
+  // Mutation per eliminare tutti gli utenti non admin
+  const deleteAllNonAdminUsersMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("DELETE", "/api/admin/users/students/all");
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Utenti eliminati",
+        description: `${data.count} utenti studenti e rappresentanti sono stati eliminati.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Errore",
+        description: "Non è stato possibile eliminare gli utenti: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Handler per eliminare tutti gli utenti non admin
+  const handleDeleteAllNonAdminUsers = () => {
+    if (window.confirm("ATTENZIONE: Stai per eliminare TUTTI gli utenti studenti e rappresentanti. Questa azione cancellerà anche i loro ordini e non può essere annullata. Sei sicuro di voler procedere?")) {
+      deleteAllNonAdminUsersMutation.mutate();
+    }
+  };
+  
   // Funzioni per gestire le classi utilizzando il hook useClasses centralizzato
   const handleAddClass = () => {
     if (!newClass.trim()) {
@@ -457,12 +486,21 @@ export default function UserAdminPage() {
                     <RefreshCw className="h-4 w-4" />
                   </Button>
                   {user?.isUserAdmin && (
-                    <Button 
-                      onClick={() => setIsManageClassesOpen(true)} 
-                      variant="outline"
-                    >
-                      Gestione Classi
-                    </Button>
+                    <>
+                      <Button 
+                        onClick={() => setIsManageClassesOpen(true)} 
+                        variant="outline"
+                      >
+                        Gestione Classi
+                      </Button>
+                      <Button 
+                        onClick={handleDeleteAllNonAdminUsers} 
+                        variant="destructive"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Elimina Studenti e Rappresentanti
+                      </Button>
+                    </>
                   )}
                   <Button onClick={() => setIsCreateUserDialogOpen(true)}>
                     <UserPlus className="mr-2 h-4 w-4" />
