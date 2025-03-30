@@ -61,7 +61,6 @@ const createUserSchema = z.object({
   firstName: z.string().min(2, "Il nome deve avere almeno 2 caratteri"),
   lastName: z.string().min(2, "Il cognome deve avere almeno 2 caratteri"),
   classRoom: z.string().min(1, "Seleziona una classe"),
-  email: z.string().email("Deve essere un'email valida"),
   isRepresentative: z.boolean().default(false),
   isAdmin: z.boolean().default(false),
   isUserAdmin: z.boolean().default(false),
@@ -104,7 +103,7 @@ export default function UserAdminPage() {
       firstName: "",
       lastName: "",
       classRoom: "",
-      email: "",
+
       isRepresentative: false,
       isAdmin: false,
       isUserAdmin: false,
@@ -199,8 +198,8 @@ export default function UserAdminPage() {
       lastName: user.lastName,
       classRoom: user.classRoom,
       isRepresentative: user.isRepresentative,
-      isAdmin: user.isAdmin,
-      isUserAdmin: !!user.isUserAdmin,
+      isAdmin: user.isAdmin ?? false,
+      isUserAdmin: user.isUserAdmin ?? false,
       password: "",
     });
     setIsEditUserDialogOpen(true);
@@ -402,19 +401,7 @@ export default function UserAdminPage() {
                 )}
               />
 
-              <FormField
-                control={createUserForm.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email di conferma</FormLabel>
-                    <FormControl>
-                      <Input placeholder="mario.rossi@scuola.edu" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
 
               <FormField
                 control={createUserForm.control}

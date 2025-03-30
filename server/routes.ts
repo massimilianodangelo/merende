@@ -347,7 +347,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         classRoom: req.body.classRoom,
-        email: req.body.email,
+        email: req.body.email || req.body.username, // Se email non viene fornita, usa username
         isRepresentative: req.body.isRepresentative,
         isAdmin: req.body.isAdmin,
         isUserAdmin: req.body.isUserAdmin
@@ -361,8 +361,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Username already exists" });
       }
       
-      // Creare l'utente
-      const user = await storage.createUser(validatedUserData);
+      // Hash della password prima di salvarla
+      const crypto = await import('crypto');
+      const salt = crypto.randomBytes(16).toString('hex');
+      const scrypt = crypto.scryptSync;
+      const hashedPassword = crypto.scryptSync(validatedUserData.password, salt, 64).toString('hex') + '.' + salt;
+      
+      // Creare l'utente con la password hashata
+      const userToCreate = {
+        ...validatedUserData,
+        password: hashedPassword
+      };
+      
+      const user = await storage.createUser(userToCreate);
       
       // Rimuovi la password prima di inviare i dati
       const { password, ...userWithoutPassword } = user;
@@ -400,7 +411,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Raccogli i dati da aggiornare
       const updateData: Partial<InsertUser> = {};
       
-      if (req.body.password) updateData.password = req.body.password;
+      if (req.body.password) {
+        // Hash della password prima di salvarla
+        const crypto = await import('crypto');
+        const salt = crypto.randomBytes(16).toString('hex');
+        const hashedPassword = crypto.scryptSync(req.body.password, salt, 64).toString('hex') + '.' + salt;
+        updateData.password = hashedPassword;
+      }
+      
       if (req.body.firstName) updateData.firstName = req.body.firstName;
       if (req.body.lastName) updateData.lastName = req.body.lastName;
       if (req.body.classRoom) updateData.classRoom = req.body.classRoom;
