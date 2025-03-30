@@ -306,7 +306,7 @@ export class MemStorage implements IStorage {
       id, 
       isRepresentative, 
       isAdmin,
-      isUserAdmin: isUserAdmin || null 
+      isUserAdmin: isUserAdmin
     };
     
     this.users.set(id, user);
