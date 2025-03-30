@@ -512,7 +512,10 @@ export default function UserAdminPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Admin">Amministrazione</SelectItem>
+                        {/* Mostra l'opzione Admin solo quando si sta creando un utente amministratore */}
+                        {createUserForm.watch("isUserAdmin") && (
+                          <SelectItem value="Admin">Amministrazione</SelectItem>
+                        )}
                         <SelectItem value="1A">1A</SelectItem>
                         <SelectItem value="1B">1B</SelectItem>
                         <SelectItem value="2A">2A</SelectItem>
@@ -660,7 +663,10 @@ export default function UserAdminPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Admin">Amministrazione</SelectItem>
+                        {/* Mostra l'opzione Admin solo quando si sta modificando un utente amministratore */}
+                        {editUserForm.watch("isUserAdmin") && (
+                          <SelectItem value="Admin">Amministrazione</SelectItem>
+                        )}
                         <SelectItem value="1A">1A</SelectItem>
                         <SelectItem value="1B">1B</SelectItem>
                         <SelectItem value="2A">2A</SelectItem>
