@@ -252,12 +252,63 @@ export default function AuthPage() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
+                              {/* Prima A-E */}
                               <SelectItem value="1A">1A</SelectItem>
-                              <SelectItem value="1B">1B</SelectItem>
                               <SelectItem value="2A">2A</SelectItem>
-                              <SelectItem value="2B">2B</SelectItem>
                               <SelectItem value="3A">3A</SelectItem>
+                              <SelectItem value="4A">4A</SelectItem>
+                              <SelectItem value="5A">5A</SelectItem>
+                              
+                              {/* Prima B-E */}
+                              <SelectItem value="1B">1B</SelectItem>
+                              <SelectItem value="2B">2B</SelectItem>
                               <SelectItem value="3B">3B</SelectItem>
+                              <SelectItem value="4B">4B</SelectItem>
+                              <SelectItem value="5B">5B</SelectItem>
+                              
+                              {/* Prima C-E */}
+                              <SelectItem value="1C">1C</SelectItem>
+                              <SelectItem value="2C">2C</SelectItem>
+                              <SelectItem value="3C">3C</SelectItem>
+                              <SelectItem value="4C">4C</SelectItem>
+                              <SelectItem value="5C">5C</SelectItem>
+                              
+                              {/* Prima D-E */}
+                              <SelectItem value="1D">1D</SelectItem>
+                              <SelectItem value="2D">2D</SelectItem>
+                              <SelectItem value="3D">3D</SelectItem>
+                              <SelectItem value="4D">4D</SelectItem>
+                              <SelectItem value="5D">5D</SelectItem>
+                              
+                              {/* Prima E-E */}
+                              <SelectItem value="1E">1E</SelectItem>
+                              <SelectItem value="2E">2E</SelectItem>
+                              <SelectItem value="3E">3E</SelectItem>
+                              <SelectItem value="4E">4E</SelectItem>
+                              <SelectItem value="5E">5E</SelectItem>
+                              
+                              {/* Prima F-F */}
+                              <SelectItem value="1F">1F</SelectItem>
+                              <SelectItem value="2F">2F</SelectItem>
+                              <SelectItem value="3F">3F</SelectItem>
+                              <SelectItem value="4F">4F</SelectItem>
+                              <SelectItem value="5F">5F</SelectItem>
+                              
+                              {/* Prima G-G */}
+                              <SelectItem value="1G">1G</SelectItem>
+                              <SelectItem value="2G">2G</SelectItem>
+                              <SelectItem value="3G">3G</SelectItem>
+                              
+                              {/* Prima H-H */}
+                              <SelectItem value="1H">1H</SelectItem>
+                              <SelectItem value="2H">2H</SelectItem>
+                              <SelectItem value="3H">3H</SelectItem>
+                              <SelectItem value="4H">4H</SelectItem>
+                              <SelectItem value="5H">5H</SelectItem>
+                              
+                              {/* Classe L */}
+                              <SelectItem value="2L">2L</SelectItem>
+                              <SelectItem value="3L">3L</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
