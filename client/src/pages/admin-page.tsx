@@ -503,7 +503,14 @@ export default function AdminPage() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {filteredOrders.filter(order => order.status === OrderStatus.PENDING).map(order => (
+                            {filteredOrders
+                              .filter(order => order.status === OrderStatus.PENDING)
+                              // Filtriamo gli ordini senza classe o con classe "N/A"
+                              .filter(order => {
+                                const classRoom = order.user && order.user.classRoom ? order.user.classRoom : "";
+                                return classRoom && classRoom.trim() !== "" && classRoom !== "N/A";
+                              })
+                              .map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
                                 <TableCell>
@@ -571,7 +578,14 @@ export default function AdminPage() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {filteredOrders.filter(order => order.status === OrderStatus.COMPLETED).map(order => (
+                            {filteredOrders
+                              .filter(order => order.status === OrderStatus.COMPLETED)
+                              // Filtriamo gli ordini senza classe o con classe "N/A"
+                              .filter(order => {
+                                const classRoom = order.user && order.user.classRoom ? order.user.classRoom : "";
+                                return classRoom && classRoom.trim() !== "" && classRoom !== "N/A";
+                              })
+                              .map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
                                 <TableCell>
@@ -621,7 +635,14 @@ export default function AdminPage() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {filteredOrders.filter(order => order.status === OrderStatus.CANCELLED).map(order => (
+                            {filteredOrders
+                              .filter(order => order.status === OrderStatus.CANCELLED)
+                              // Filtriamo gli ordini senza classe o con classe "N/A"
+                              .filter(order => {
+                                const classRoom = order.user && order.user.classRoom ? order.user.classRoom : "";
+                                return classRoom && classRoom.trim() !== "" && classRoom !== "N/A";
+                              })
+                              .map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
                                 <TableCell>
