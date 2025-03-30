@@ -8,6 +8,40 @@ import { z } from "zod";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes
   setupAuth(app);
+  
+  // Rotte per la gestione delle classi
+  app.get("/api/admin/classes", async (req, res) => {
+    try {
+      const classes = await storage.getAvailableClasses();
+      res.json(classes);
+    } catch (error) {
+      console.error("Errore nel recupero delle classi:", error);
+      res.status(500).json({ error: "Errore nel recupero delle classi" });
+    }
+  });
+  
+  app.post("/api/admin/classes", async (req, res) => {
+    try {
+      // Verifica se l'utente è autenticato e ha i permessi di amministrazione utenti
+      if (req.isAuthenticated() && !req.user?.isUserAdmin) {
+        return res.status(403).json({ error: "Non autorizzato" });
+      }
+      
+      const { classes } = req.body;
+      
+      if (!Array.isArray(classes)) {
+        return res.status(400).json({ error: "Formato non valido" });
+      }
+      
+      // Aggiorna le classi
+      const updatedClasses = await storage.updateAvailableClasses(classes);
+      
+      res.json(updatedClasses);
+    } catch (error) {
+      console.error("Errore nell'aggiornamento delle classi:", error);
+      res.status(500).json({ error: "Errore nell'aggiornamento delle classi" });
+    }
+  });
 
   // Products routes
   app.get("/api/products", async (req, res) => {

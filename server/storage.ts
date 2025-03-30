@@ -110,6 +110,10 @@ export interface IStorage {
   getOrderItems(orderId: number): Promise<OrderItem[]>;
   createOrderItem(orderItem: InsertOrderItem): Promise<OrderItem>;
   
+  // Class operations
+  getAvailableClasses(): Promise<string[]>;
+  updateAvailableClasses(classes: string[]): Promise<string[]>;
+  
   // Session store
   sessionStore: SessionStore;
 }
@@ -119,6 +123,7 @@ export class MemStorage implements IStorage {
   private products: Map<number, Product>;
   private orders: Map<number, Order>;
   private orderItems: Map<number, OrderItem>;
+  private availableClasses: string[];
   public sessionStore: SessionStore;
   
   private userId: number;
@@ -175,6 +180,20 @@ export class MemStorage implements IStorage {
       
       // Initialize with some sample products
       this.initializeProducts();
+    }
+    
+    // Prova a caricare le classi dal file separato
+    try {
+      const savedClasses = Storage.loadData('availableClasses');
+      if (savedClasses) {
+        this.availableClasses = savedClasses;
+      } else {
+        // Se non esiste, inizializza con un array vuoto
+        this.availableClasses = [];
+      }
+    } catch (error) {
+      console.error("Errore nel caricamento delle classi:", error);
+      this.availableClasses = [];
     }
     
     this.sessionStore = new MemoryStore({
@@ -580,6 +599,65 @@ export class MemStorage implements IStorage {
     this.orderItems.set(id, orderItem);
     this.saveData(); // Salva dopo la creazione di un elemento dell'ordine
     return orderItem;
+  }
+  
+  // Operazioni per la gestione delle classi
+  async getAvailableClasses(): Promise<string[]> {
+    try {
+      // Se abbiamo già un elenco di classi salvato, lo restituiamo
+      if (this.availableClasses && this.availableClasses.length > 0) {
+        return this.availableClasses;
+      }
+      
+      // Altrimenti, estraiamo tutte le classi dagli utenti esistenti
+      const users = await this.getAllUsers();
+      const classes = Array.from(new Set(
+        users
+          .map(user => user.classRoom)
+          .filter(Boolean) // Filtra valori null/undefined
+          .filter(className => className !== "Admin") // Esclude la "classe" Admin
+      )).sort();
+      
+      // Se non ci sono classi dagli utenti, restituiamo le classi di default
+      if (classes.length === 0) {
+        const defaultClasses = [
+          "1A", "2A", "3A", "4A", "5A",
+          "1B", "2B", "3B", "4B", "5B",
+          "1C", "2C", "3C", "4C", "5C",
+          "1D", "2D", "3D", "4D", "5D",
+          "1E", "2E", "3E", "4E", "5E",
+          "1F", "2F", "3F", "4F", "5F",
+          "1G", "2G", "3G",
+          "1H", "2H", "3H", "4H", "5H",
+          "2L", "3L"
+        ];
+        this.availableClasses = defaultClasses;
+        return defaultClasses;
+      }
+      
+      // Altrimenti salviamo e restituiamo le classi trovate
+      this.availableClasses = classes;
+      return classes;
+    } catch (error) {
+      console.error("Errore nel recupero delle classi:", error);
+      // In caso di errore, restituiamo un array vuoto
+      return [];
+    }
+  }
+  
+  async updateAvailableClasses(classes: string[]): Promise<string[]> {
+    try {
+      // Aggiorna la lista delle classi disponibili
+      this.availableClasses = [...classes].sort();
+      
+      // Salva il nuovo elenco di classi nel file separate
+      Storage.saveData('availableClasses', this.availableClasses);
+      
+      return this.availableClasses;
+    } catch (error) {
+      console.error("Errore nell'aggiornamento delle classi:", error);
+      return this.availableClasses || [];
+    }
   }
 }
 

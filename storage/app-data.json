@@ -177,11 +177,75 @@
         }
       ]
     ],
-    "orders": [],
-    "orderItems": [],
+    "orders": [
+      [
+        5,
+        {
+          "userId": 3,
+          "status": "pending",
+          "total": 5.5,
+          "orderDate": "2025-03-30T14:00:00.000Z",
+          "id": 5,
+          "createdAt": "2025-03-30T15:59:38.420Z"
+        }
+      ],
+      [
+        6,
+        {
+          "userId": 4,
+          "status": "pending",
+          "total": 4,
+          "orderDate": "2025-03-30T14:15:00.000Z",
+          "id": 6,
+          "createdAt": "2025-03-30T15:59:43.048Z"
+        }
+      ]
+    ],
+    "orderItems": [
+      [
+        7,
+        {
+          "orderId": 5,
+          "productId": 1,
+          "quantity": 2,
+          "price": 2.5,
+          "id": 7
+        }
+      ],
+      [
+        8,
+        {
+          "orderId": 5,
+          "productId": 3,
+          "quantity": 1,
+          "price": 0.5,
+          "id": 8
+        }
+      ],
+      [
+        9,
+        {
+          "orderId": 6,
+          "productId": 2,
+          "quantity": 1,
+          "price": 3,
+          "id": 9
+        }
+      ],
+      [
+        10,
+        {
+          "orderId": 6,
+          "productId": 5,
+          "quantity": 1,
+          "price": 1,
+          "id": 10
+        }
+      ]
+    ],
     "userId": 8,
     "productId": 14,
-    "orderId": 5,
-    "orderItemId": 7
+    "orderId": 7,
+    "orderItemId": 11
   }
 }
