@@ -7,7 +7,6 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { isBeforeOrderDeadline } from "@/lib/utils";
 
 interface CartContentsProps {
   onClose: () => void;

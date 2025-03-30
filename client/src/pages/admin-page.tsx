@@ -286,7 +286,7 @@ export default function AdminPage() {
   
   // Group orders by class
   const ordersByClass = filteredOrders.reduce((acc, order) => {
-    const classRoom = order.user && order.user.classRoom ? order.user.classRoom : "N/A";
+    const classRoom = order.user && order.user.classRoom ? order.user.classRoom : "";
     if (!acc[classRoom]) {
       acc[classRoom] = [];
     }
@@ -501,10 +501,10 @@ export default function AdminPage() {
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
                                 <TableCell>
-                                  {order.user ? `${order.user.firstName || "N/A"} ${order.user.lastName || "N/A"}` : "Utente non disponibile"}
+                                  {order.user ? `${order.user.firstName || ""} ${order.user.lastName || ""}` : "Utente non disponibile"}
                                 </TableCell>
                                 <TableCell>
-                                  {order.user && order.user.classRoom ? order.user.classRoom : "N/A"}
+                                  {order.user && order.user.classRoom ? order.user.classRoom : ""}
                                   {order.user && order.user.classRoom && !classes.includes(order.user.classRoom) && 
                                    <span className="text-amber-500 ml-2">(classe non più disponibile)</span>}
                                 </TableCell>
@@ -569,10 +569,10 @@ export default function AdminPage() {
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
                                 <TableCell>
-                                  {order.user ? `${order.user.firstName || "N/A"} ${order.user.lastName || "N/A"}` : "Utente non disponibile"}
+                                  {order.user ? `${order.user.firstName || ""} ${order.user.lastName || ""}` : "Utente non disponibile"}
                                 </TableCell>
                                 <TableCell>
-                                  {order.user && order.user.classRoom ? order.user.classRoom : "N/A"}
+                                  {order.user && order.user.classRoom ? order.user.classRoom : ""}
                                   {order.user && order.user.classRoom && !classes.includes(order.user.classRoom) && 
                                    <span className="text-amber-500 ml-2">(classe non più disponibile)</span>}
                                 </TableCell>
@@ -619,10 +619,10 @@ export default function AdminPage() {
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
                                 <TableCell>
-                                  {order.user ? `${order.user.firstName || "N/A"} ${order.user.lastName || "N/A"}` : "Utente non disponibile"}
+                                  {order.user ? `${order.user.firstName || ""} ${order.user.lastName || ""}` : "Utente non disponibile"}
                                 </TableCell>
                                 <TableCell>
-                                  {order.user && order.user.classRoom ? order.user.classRoom : "N/A"}
+                                  {order.user && order.user.classRoom ? order.user.classRoom : ""}
                                   {order.user && order.user.classRoom && !classes.includes(order.user.classRoom) && 
                                    <span className="text-amber-500 ml-2">(classe non più disponibile)</span>}
                                 </TableCell>
@@ -866,7 +866,7 @@ export default function AdminPage() {
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
                                 <TableCell>
-                                  {order.user ? `${order.user.firstName || "N/A"} ${order.user.lastName || "N/A"}` : "Utente non disponibile"}
+                                  {order.user ? `${order.user.firstName || ""} ${order.user.lastName || ""}` : "Utente non disponibile"}
                                 </TableCell>
                                 <TableCell>
                                   {order.status === OrderStatus.PENDING && <span className="text-yellow-600">In Attesa</span>}
@@ -915,10 +915,10 @@ export default function AdminPage() {
                 <div>
                   <h4 className="text-sm font-medium text-gray-500">Cliente</h4>
                   <p className="font-medium">
-                    {selectedOrder.user ? `${selectedOrder.user.firstName || "N/A"} ${selectedOrder.user.lastName || "N/A"}` : "Utente non disponibile"}
+                    {selectedOrder.user ? `${selectedOrder.user.firstName || ""} ${selectedOrder.user.lastName || ""}` : "Utente non disponibile"}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Classe {selectedOrder.user && selectedOrder.user.classRoom ? selectedOrder.user.classRoom : "N/A"}
+                    Classe {selectedOrder.user && selectedOrder.user.classRoom ? selectedOrder.user.classRoom : ""}
                     {selectedOrder.user && selectedOrder.user.classRoom && !classes.includes(selectedOrder.user.classRoom) && 
                       <span className="text-amber-500 ml-2">(Classe non più esistente)</span>}
                   </p>

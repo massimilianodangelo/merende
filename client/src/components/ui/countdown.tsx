@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import { isBeforeOrderDeadline, getTodayWithTime } from "@/lib/utils";
 import { Clock } from "lucide-react";
 
 export function Countdown() {
