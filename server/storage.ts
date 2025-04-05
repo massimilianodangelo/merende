@@ -145,8 +145,12 @@ export class MemStorage implements IStorage {
         this.productId = savedData.productId;
         this.orderId = savedData.orderId;
         this.orderItemId = savedData.orderItemId;
-        // Carica gli ID utente eliminati
+        // Carica gli ID utente eliminati e li ordina in modo crescente
         this.deletedUserIds = savedData.deletedUserIds || [];
+        // Garantisce che gli ID siano sempre ordinati in modo crescente
+        if (this.deletedUserIds.length > 0) {
+          this.deletedUserIds.sort((a, b) => a - b);
+        }
         console.log("Dati caricati dal file di storage");
       } else {
         // Inizializza nuovi dati se non esiste un salvataggio
@@ -432,6 +436,9 @@ export class MemStorage implements IStorage {
     
     // Aggiungi l'ID eliminato alla lista per il riutilizzo futuro
     this.deletedUserIds.push(id);
+    
+    // Ordina gli ID eliminati in ordine crescente per garantire che venga sempre riutilizzato il più piccolo
+    this.deletedUserIds.sort((a, b) => a - b);
     
     this.saveData(); // Salva dopo l'eliminazione dell'utente
     return true;
