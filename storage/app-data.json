@@ -30,21 +30,6 @@
           "isUserAdmin": false,
           "id": 1
         }
-      ],
-      [
-        21,
-        {
-          "username": "massi@gmail.com",
-          "password": "55cd1e81851b5a725b3641eff8563e824742e87ddca21c7ddb08127c70689c62c9b62ff035bbc2d49ca589bce3d663f1ce8dacb7fc716ac3b9160742f1b2ca05.efb88900c335eab268dd913fce466747",
-          "firstName": "Massimiliano",
-          "lastName": "Dangelo",
-          "classRoom": "2C",
-          "email": "massi@gmail.com",
-          "isRepresentative": false,
-          "isAdmin": false,
-          "isUserAdmin": false,
-          "id": 21
-        }
       ]
     ],
     "products": [
@@ -262,7 +247,9 @@
     "productId": 14,
     "orderId": 14,
     "orderItemId": 22,
-    "deletedUserIds": []
+    "deletedUserIds": [
+      21
+    ]
   },
   "availableClasses": [
     "1A",
