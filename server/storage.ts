@@ -416,8 +416,11 @@ export class MemStorage implements IStorage {
   async deleteUser(id: number): Promise<boolean> {
     const existingUser = this.users.get(id);
     if (!existingUser) {
+      console.log(`deleteUser: Utente con ID ${id} non trovato`);
       return false;
     }
+    
+    console.log(`deleteUser: Eliminazione utente con ID ${id} (${existingUser.firstName} ${existingUser.lastName})`);
     
     // Elimina gli ordini collegati all'utente
     const userOrders = Array.from(this.orders.values()).filter(order => order.userId === id);
@@ -434,13 +437,26 @@ export class MemStorage implements IStorage {
     // Elimina l'utente
     this.users.delete(id);
     
-    // Aggiungi l'ID eliminato alla lista per il riutilizzo futuro
-    this.deletedUserIds.push(id);
+    // Verifica se l'ID è già presente nell'array degli ID eliminati
+    if (!this.deletedUserIds.includes(id)) {
+      console.log(`deleteUser: Aggiunto ID ${id} all'array deletedUserIds`);
+      // Aggiungi l'ID eliminato alla lista per il riutilizzo futuro
+      this.deletedUserIds.push(id);
+    } else {
+      console.log(`deleteUser: ID ${id} già presente nell'array deletedUserIds`);
+    }
     
     // Ordina gli ID eliminati in ordine crescente per garantire che venga sempre riutilizzato il più piccolo
     this.deletedUserIds.sort((a, b) => a - b);
     
+    console.log(`deleteUser: Array deletedUserIds aggiornato: [${this.deletedUserIds.join(', ')}]`);
+    
     this.saveData(); // Salva dopo l'eliminazione dell'utente
+    
+    // Verifica che i dati siano stati salvati correttamente
+    const savedData = Storage.loadData('appData');
+    console.log(`deleteUser: Verifica salvataggio - deletedUserIds: [${savedData.deletedUserIds ? savedData.deletedUserIds.join(', ') : ''}]`);
+    
     return true;
   }
   
@@ -448,21 +464,38 @@ export class MemStorage implements IStorage {
     // Controlla se ci sono ID eliminati da riutilizzare
     let id: number;
     
+    console.log(`createUser: Array deletedUserIds prima: [${this.deletedUserIds.join(', ')}]`);
+    
+    // Carica sempre gli ultimi dati dal file di storage per assicurarsi che deletedUserIds sia aggiornato
+    const savedData = Storage.loadData('appData');
+    if (savedData && savedData.deletedUserIds) {
+      // Aggiorna l'array con gli ultimi dati salvati
+      this.deletedUserIds = savedData.deletedUserIds;
+      console.log(`createUser: Aggiornato deletedUserIds dal file: [${this.deletedUserIds.join(', ')}]`);
+    }
+    
     // Garantisce che gli ID eliminati siano sempre ordinati in modo crescente
     if (this.deletedUserIds.length > 0) {
       this.deletedUserIds.sort((a, b) => a - b);
+      console.log(`createUser: Array deletedUserIds ordinato: [${this.deletedUserIds.join(', ')}]`);
       
       // Prende l'ID più piccolo disponibile
       id = this.deletedUserIds.shift() as number;
-      console.log(`Riutilizzo ID utente eliminato: ${id}`);
+      console.log(`createUser: Riutilizzo ID utente eliminato: ${id}`);
     } else {
       // Se non ci sono ID eliminati, genera un nuovo ID
       id = this.userId++;
-      console.log(`Generato nuovo ID utente: ${id}`);
+      console.log(`createUser: Generato nuovo ID utente: ${id}`);
     }
+    
+    console.log(`createUser: Array deletedUserIds dopo: [${this.deletedUserIds.join(', ')}]`);
     
     // Salva i dati dopo aver modificato deletedUserIds
     this.saveData();
+    
+    // Verifica che i dati siano stati salvati correttamente
+    const updatedData = Storage.loadData('appData');
+    console.log(`createUser: Verifica salvataggio - deletedUserIds: [${updatedData.deletedUserIds ? updatedData.deletedUserIds.join(', ') : ''}]`);
     
     // Controlla se è un amministratore basato sull'email
     const isAdmin = insertUser.email === 'prova@amministratore.it' ||
