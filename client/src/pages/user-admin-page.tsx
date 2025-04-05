@@ -139,43 +139,10 @@ export default function UserAdminPage() {
     retry: 1
   });
   
-  // Aggiunta manuale degli utenti amministratori
-  const adminUsers: UserWithoutPassword[] = [
-    {
-      id: 1,
-      username: "prova@amministratore.it",
-      firstName: "Admin",
-      lastName: "System",
-      classRoom: "Admin",
-      email: "prova@amministratore.it",
-      isAdmin: true,
-      isRepresentative: false,
-      isUserAdmin: false
-    },
-    {
-      id: 2,
-      username: "gestione@amministratore.it",
-      firstName: "Gestione",
-      lastName: "Utenti",
-      classRoom: "Admin",
-      email: "gestione@amministratore.it",
-      isAdmin: false,
-      isRepresentative: false,
-      isUserAdmin: true
-    }
-  ];
-  
-  // Combina gli utenti API con gli admin hardcoded
+  // Utilizzo solo i dati dal database, non più hardcoded
   const users = useMemo(() => {
-    if (!apiUsers) return adminUsers;
-    
-    // Filtra gli admin esistenti dagli utenti API per evitare duplicati
-    const filteredApiUsers = apiUsers.filter(user => 
-      user.username !== "prova@amministratore.it" && 
-      user.username !== "gestione@amministratore.it"
-    );
-    
-    return [...adminUsers, ...filteredApiUsers];
+    if (!apiUsers) return [];
+    return apiUsers;
   }, [apiUsers]);
 
   // Form per la creazione di un nuovo utente

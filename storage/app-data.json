@@ -20,13 +20,13 @@
         2,
         {
           "username": "gestione@amministratore.it",
-          "password": "ee05dc0ce5dc2944d8236eae0178df3d12b2471b4054fe7dae0b72246f388471.f1b2c3d4e5f6789abcdef123",
+          "password": "bfc7bed24a7cbf6e4ee32f87512e53b3d9e963ebe29e4730e4f2825f0a90f703ddfd90cf31c915986b346ff824dbce42691117c32a45648d20e8ed324d1db8d9.1af100a26ac7af39065e9929520b4885",
           "firstName": "Gestione",
           "lastName": "Utenti",
           "classRoom": "Admin",
           "email": "gestione@amministratore.it",
-          "isAdmin": false,
           "isRepresentative": false,
+          "isAdmin": false,
           "isUserAdmin": true,
           "id": 2
         }
@@ -243,10 +243,13 @@
         }
       ]
     ],
-    "userId": 21,
+    "userId": 22,
     "productId": 14,
     "orderId": 14,
-    "orderItemId": 22
+    "orderItemId": 22,
+    "deletedUserIds": [
+      21
+    ]
   },
   "availableClasses": [
     "1A",

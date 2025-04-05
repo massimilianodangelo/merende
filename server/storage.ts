@@ -450,6 +450,9 @@ export class MemStorage implements IStorage {
       console.log(`Generato nuovo ID utente: ${id}`);
     }
     
+    // Salva i dati dopo aver modificato deletedUserIds
+    this.saveData();
+    
     // Controlla se è un amministratore basato sull'email
     const isAdmin = insertUser.email === 'prova@amministratore.it' ||
                    !!insertUser.isAdmin;
