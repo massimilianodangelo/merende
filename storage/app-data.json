@@ -243,13 +243,10 @@
         }
       ]
     ],
-    "userId": 22,
+    "userId": 23,
     "productId": 14,
     "orderId": 14,
-    "orderItemId": 22,
-    "deletedUserIds": [
-      21
-    ]
+    "orderItemId": 22
   },
   "availableClasses": [
     "1A",

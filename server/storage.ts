@@ -130,6 +130,7 @@ export class MemStorage implements IStorage {
   private productId: number;
   private orderId: number;
   private orderItemId: number;
+  private deletedUserIds: number[] = []; // Array per memorizzare gli ID degli utenti eliminati
 
   constructor() {
     // Carica i dati se esistono
@@ -144,6 +145,12 @@ export class MemStorage implements IStorage {
         this.productId = savedData.productId;
         this.orderId = savedData.orderId;
         this.orderItemId = savedData.orderItemId;
+        // Carica gli ID utente eliminati e li ordina in modo crescente
+        this.deletedUserIds = savedData.deletedUserIds || [];
+        // Garantisce che gli ID siano sempre ordinati in modo crescente
+        if (this.deletedUserIds.length > 0) {
+          this.deletedUserIds.sort((a, b) => a - b);
+        }
         console.log("Dati caricati dal file di storage");
       } else {
         // Inizializza nuovi dati se non esiste un salvataggio
@@ -212,7 +219,8 @@ export class MemStorage implements IStorage {
         userId: this.userId,
         productId: this.productId,
         orderId: this.orderId,
-        orderItemId: this.orderItemId
+        orderItemId: this.orderItemId,
+        deletedUserIds: this.deletedUserIds // Salva anche gli ID utente eliminati
       };
       Storage.saveData('appData', dataToSave);
     } catch (error) {
@@ -429,8 +437,18 @@ export class MemStorage implements IStorage {
     // Elimina l'utente
     this.users.delete(id);
     
-    // Non aggiungiamo l'ID alla lista di ID eliminati poiché non vogliamo riutilizzare gli ID
-    // ma vogliamo semplicemente assegnare ID sequenziali
+    // Aggiungi l'ID alla lista di ID eliminati per il riutilizzo futuro
+    if (!this.deletedUserIds.includes(id)) {
+      console.log(`deleteUser: Aggiunto ID ${id} all'array deletedUserIds`);
+      this.deletedUserIds.push(id);
+    } else {
+      console.log(`deleteUser: ID ${id} già presente nell'array deletedUserIds`);
+    }
+    
+    // Ordina gli ID eliminati in ordine crescente per garantire che venga sempre riutilizzato il più piccolo
+    this.deletedUserIds.sort((a, b) => a - b);
+    
+    console.log(`deleteUser: Array deletedUserIds aggiornato: [${this.deletedUserIds.join(', ')}]`);
     
     this.saveData(); // Salva dopo l'eliminazione dell'utente
     
@@ -438,32 +456,52 @@ export class MemStorage implements IStorage {
   }
   
   async createUser(insertUser: InsertUser): Promise<User> {
-    // Trova l'ID più alto tra tutti gli utenti esistenti
-    let maxId = 0;
+    // Determina l'ID da usare per il nuovo utente
+    let id: number;
     
     // Carica sempre gli ultimi dati dal file di storage per assicurarsi di avere i dati più aggiornati
     const savedData = Storage.loadData('appData');
-    if (savedData && savedData.users) {
-      // Ottiene tutti gli ID utente
-      const userIds = savedData.users.map((userEntry: [number, User]) => userEntry[0]);
-      
-      // Trova l'ID massimo, se esistono utenti
-      if (userIds.length > 0) {
-        maxId = Math.max(...userIds);
-        console.log(`createUser: ID utente massimo trovato: ${maxId}`);
-      }
-    } else {
-      // Se non ci sono dati salvati, usiamo l'ID corrente
-      maxId = this.userId - 1;
-      console.log(`createUser: Nessun utente esistente, ID massimo inizializzato a: ${maxId}`);
+    if (savedData && savedData.deletedUserIds) {
+      // Aggiorna l'array con gli ultimi dati salvati
+      this.deletedUserIds = savedData.deletedUserIds;
+      console.log(`createUser: Caricati ID eliminati: [${this.deletedUserIds.join(', ')}]`);
     }
     
-    // Assegna ID sequenziale (massimo + 1)
-    const id = Math.max(maxId + 1, this.userId);
-    console.log(`createUser: Assegnato nuovo ID utente sequenziale: ${id}`);
+    // Controlla se ci sono ID eliminati da riutilizzare (in ordine crescente)
+    if (this.deletedUserIds.length > 0) {
+      // Garantisce che gli ID eliminati siano sempre ordinati in modo crescente
+      this.deletedUserIds.sort((a, b) => a - b);
+      
+      // Prende l'ID più piccolo disponibile tra quelli eliminati
+      id = this.deletedUserIds.shift() as number;
+      console.log(`createUser: Riutilizzo ID utente eliminato: ${id}`);
+    } else {
+      // Se non ci sono ID eliminati da riutilizzare, trova l'ID massimo attualmente in uso
+      let maxId = 0;
+      if (savedData && savedData.users) {
+        // Ottiene tutti gli ID utente
+        const userIds = savedData.users.map((userEntry: [number, User]) => userEntry[0]);
+        
+        // Trova l'ID massimo, se esistono utenti
+        if (userIds.length > 0) {
+          maxId = Math.max(...userIds);
+          console.log(`createUser: ID utente massimo trovato: ${maxId}`);
+        }
+      } else {
+        // Se non ci sono dati salvati, usiamo l'ID corrente 
+        maxId = this.userId - 1;
+        console.log(`createUser: Nessun utente esistente, ID massimo inizializzato a: ${maxId}`);
+      }
+      
+      // Assegna ID sequenziale (massimo + 1)
+      id = maxId + 1;
+      console.log(`createUser: Assegnato nuovo ID utente sequenziale: ${id}`);
+    }
     
-    // Aggiorna userId per mantenere l'incremento corretto anche per futuri inserimenti
-    this.userId = id + 1;
+    // Aggiorna userId solo se il nuovo ID è maggiore, per mantenere l'incremento corretto
+    if (id >= this.userId) {
+      this.userId = id + 1;
+    }
     
     // Controlla se è un amministratore basato sull'email
     const isAdmin = insertUser.email === 'prova@amministratore.it' ||
