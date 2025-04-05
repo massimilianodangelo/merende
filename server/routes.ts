@@ -580,7 +580,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Endpoint per eliminare tutti gli utenti studenti e rappresentanti (non gli admin)
+  // Endpoint per eliminare tutti gli utenti (inclusi admin, ma non gli admin principali)
   app.delete("/api/admin/users/students/all", async (req, res) => {
     try {
       // Controllo sicurezza
@@ -598,15 +598,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Ottieni tutti gli utenti
       const allUsers = await storage.getAllUsers();
       
-      // Filtra solo gli utenti che non sono amministratori o gestori di utenti
-      const nonAdminUsers = allUsers.filter(user => 
-        !user.isAdmin && !user.isUserAdmin && user.id !== 1 && user.id !== 2
-      );
+      // Filtra tutti gli utenti tranne quelli con ID 1 e 2 (admin principali)
+      const usersToDelete = allUsers.filter(user => user.id !== 1 && user.id !== 2);
       
       let deletedCount = 0;
       
-      // Elimina ogni utente non amministratore
-      for (const user of nonAdminUsers) {
+      // Elimina ogni utente che non è un admin principale
+      for (const user of usersToDelete) {
         const success = await storage.deleteUser(user.id);
         if (success) {
           deletedCount++;
@@ -618,7 +616,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         count: deletedCount 
       });
     } catch (error) {
-      console.error("Error deleting non-admin users:", error);
+      console.error("Error deleting users:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });

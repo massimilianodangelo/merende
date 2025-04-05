@@ -130,6 +130,7 @@ export class MemStorage implements IStorage {
   private productId: number;
   private orderId: number;
   private orderItemId: number;
+  private deletedUserIds: number[] = []; // Array per memorizzare gli ID degli utenti eliminati
 
   constructor() {
     // Carica i dati se esistono
@@ -144,6 +145,8 @@ export class MemStorage implements IStorage {
         this.productId = savedData.productId;
         this.orderId = savedData.orderId;
         this.orderItemId = savedData.orderItemId;
+        // Carica gli ID utente eliminati
+        this.deletedUserIds = savedData.deletedUserIds || [];
         console.log("Dati caricati dal file di storage");
       } else {
         // Inizializza nuovi dati se non esiste un salvataggio
@@ -212,7 +215,8 @@ export class MemStorage implements IStorage {
         userId: this.userId,
         productId: this.productId,
         orderId: this.orderId,
-        orderItemId: this.orderItemId
+        orderItemId: this.orderItemId,
+        deletedUserIds: this.deletedUserIds // Salva anche gli ID utente eliminati
       };
       Storage.saveData('appData', dataToSave);
     } catch (error) {
@@ -430,12 +434,26 @@ export class MemStorage implements IStorage {
     
     // Elimina l'utente
     this.users.delete(id);
+    
+    // Aggiungi l'ID eliminato alla lista per il riutilizzo futuro
+    this.deletedUserIds.push(id);
+    
     this.saveData(); // Salva dopo l'eliminazione dell'utente
     return true;
   }
   
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userId++;
+    // Controlla se ci sono ID eliminati da riutilizzare
+    let id: number;
+    if (this.deletedUserIds.length > 0) {
+      // Prende il primo ID disponibile dall'array degli ID eliminati
+      id = this.deletedUserIds.shift() as number;
+      console.log(`Riutilizzo ID utente eliminato: ${id}`);
+    } else {
+      // Se non ci sono ID eliminati, genera un nuovo ID
+      id = this.userId++;
+      console.log(`Generato nuovo ID utente: ${id}`);
+    }
     
     // Controlla se è un amministratore basato sull'email
     const isAdmin = insertUser.email === 'prova@amministratore.it' ||
