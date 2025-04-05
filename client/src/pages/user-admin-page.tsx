@@ -375,15 +375,17 @@ export default function UserAdminPage() {
     });
   };
   
-  // Filtra gli utenti in base alla ricerca
+  // Filtra gli utenti in base alla ricerca e ordinali per ID in ordine crescente
   const filteredUsers = users
-    ? users.filter(
-        (user) =>
-          user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user.classRoom.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    ? users
+        .filter(
+          (user) =>
+            user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.classRoom.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .sort((a, b) => a.id - b.id) // Ordina gli utenti per ID in ordine crescente
     : [];
 
   return (
