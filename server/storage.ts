@@ -410,11 +410,6 @@ export class MemStorage implements IStorage {
   }
   
   async deleteUser(id: number): Promise<boolean> {
-    // Non eliminare gli utenti amministratori predefiniti (ID 1 per l'admin principale e ID 2 per l'admin utenti)
-    if (id === 1 || id === 2) {
-      return false;
-    }
-    
     const existingUser = this.users.get(id);
     if (!existingUser) {
       return false;

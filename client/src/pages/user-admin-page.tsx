@@ -577,8 +577,8 @@ export default function UserAdminPage() {
                                   >
                                     <Edit className="h-4 w-4 mr-1" /> Modifica
                                   </Button>
-                                  {/* Non mostrare il pulsante elimina per gli utenti admin principali */}
-                                  {user.id !== 1 && user.id !== 2 && (
+                                  {/* Mostra il pulsante elimina per tutti gli utenti */}
+                                  {(
                                     <Button
                                       variant="ghost"
                                       size="sm"
@@ -669,7 +669,7 @@ export default function UserAdminPage() {
                                           >
                                             <Edit className="h-4 w-4 mr-1" /> Modifica
                                           </Button>
-                                          {user.id !== 1 && user.id !== 2 && (
+                                          {(
                                             <Button
                                               variant="ghost"
                                               size="sm"
@@ -733,6 +733,15 @@ export default function UserAdminPage() {
                                           onClick={() => handleEditUser(user)}
                                         >
                                           <Edit className="h-4 w-4 mr-1" /> Modifica
+                                        </Button>
+                                        {/* Aggiungiamo pulsante elimina anche per gli admin */}
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => handleDeleteUser(user.id)}
+                                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                        >
+                                          <Trash2 className="h-4 w-4 mr-1" /> Elimina
                                         </Button>
                                       </div>
                                     </TableCell>

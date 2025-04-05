@@ -561,11 +561,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
       
-      // Non permettere di eliminare gli amministratori principali
-      if (id === 1 || id === 2) {
-        return res.status(403).json({ message: "Cannot delete administrator accounts" });
-      }
-      
       // Elimina l'utente
       const deleted = await storage.deleteUser(id);
       
@@ -580,7 +575,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Endpoint per eliminare tutti gli utenti (inclusi admin, ma non gli admin principali)
+  // Endpoint per eliminare tutti gli utenti (inclusi admin, senza eccezioni)
   app.delete("/api/admin/users/students/all", async (req, res) => {
     try {
       // Controllo sicurezza
@@ -598,12 +593,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Ottieni tutti gli utenti
       const allUsers = await storage.getAllUsers();
       
-      // Filtra tutti gli utenti tranne quelli con ID 1 e 2 (admin principali)
-      const usersToDelete = allUsers.filter(user => user.id !== 1 && user.id !== 2);
+      // Includi tutti gli utenti, anche quelli con ID 1 e 2
+      const usersToDelete = allUsers;
       
       let deletedCount = 0;
       
-      // Elimina ogni utente che non è un admin principale
+      // Elimina ogni utente
       for (const user of usersToDelete) {
         const success = await storage.deleteUser(user.id);
         if (success) {
