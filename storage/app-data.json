@@ -2,21 +2,6 @@
   "appData": {
     "users": [
       [
-        1,
-        {
-          "username": "prova@amministratore.it",
-          "password": "7a77a28e28a83b63643fc22e9e0eab8ccf977c4d6f16bc7b206a5604deceeedc.c0ffee12deadbeef34abcd5678",
-          "firstName": "Admin",
-          "lastName": "System",
-          "classRoom": "Admin",
-          "email": "prova@amministratore.it",
-          "isAdmin": true,
-          "isRepresentative": false,
-          "id": 1,
-          "isUserAdmin": false
-        }
-      ],
-      [
         2,
         {
           "username": "gestione@amministratore.it",
@@ -29,6 +14,21 @@
           "isAdmin": false,
           "isUserAdmin": true,
           "id": 2
+        }
+      ],
+      [
+        21,
+        {
+          "username": "prova2@amministratore.it",
+          "password": "61549ead2d3e561aab402e4d844ba36f518c504fe2d51ce8dc4f5f720e1dcda3b8ef729b6eaabf494ad2eec57d6c721d22f15a64b52f59aec51fbf19abfd5409.758a44c3b09bc9de9f6c550cff50478c",
+          "firstName": "Admin 2",
+          "lastName": "Prova",
+          "classRoom": "Admin",
+          "email": "prova2@amministratore.it",
+          "isRepresentative": false,
+          "isAdmin": true,
+          "isUserAdmin": false,
+          "id": 21
         }
       ]
     ],
@@ -248,7 +248,7 @@
     "orderId": 14,
     "orderItemId": 22,
     "deletedUserIds": [
-      21
+      1
     ]
   },
   "availableClasses": [

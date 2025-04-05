@@ -447,8 +447,12 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     // Controlla se ci sono ID eliminati da riutilizzare
     let id: number;
+    
+    // Garantisce che gli ID eliminati siano sempre ordinati in modo crescente
     if (this.deletedUserIds.length > 0) {
-      // Prende il primo ID disponibile dall'array degli ID eliminati
+      this.deletedUserIds.sort((a, b) => a - b);
+      
+      // Prende l'ID più piccolo disponibile
       id = this.deletedUserIds.shift() as number;
       console.log(`Riutilizzo ID utente eliminato: ${id}`);
     } else {
