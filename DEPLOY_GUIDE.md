@@ -1,31 +1,69 @@
-# Guida al Deployment su Vercel
+# Guida Rapida al Deployment con Vercel CLI
 
-Questa guida spiega come deployare l'applicazione su Vercel per renderla disponibile a tutta la scuola.
+Se preferisci deployare l'applicazione usando la linea di comando invece dell'interfaccia web, ecco una guida rapida.
 
-## Step 1: Configurazione dell'Account e del Repository
+## Prerequisiti
 
-1. Crea un account su [Vercel](https://vercel.com/) (puoi usare il tuo account GitHub)
-2. Crea un repository GitHub con tutti i file del progetto
-3. Assicurati che il file `vercel.json` sia nella root del progetto
+1. Node.js e npm installati
+2. Vercel CLI installato (`npm i -g vercel`)
+3. Un account Vercel
 
-## Step 2: Database PostgreSQL
+## Passaggi per il Deployment
 
-Per questa applicazione ti consiglio di usare [Neon](https://neon.tech/):
+### 1. Login a Vercel
 
-1. Crea un account gratuito su Neon
-2. Crea un nuovo progetto
-3. Copia la stringa di connessione (nella forma `postgresql://user:password@endpoint/dbname`)
+```bash
+vercel login
+```
 
-## Step 3: Deploy su Vercel
+Segui le istruzioni per autenticarti con il tuo account Vercel.
 
-1. Nel dashboard Vercel, clicca su "New Project"
-2. Importa il repository GitHub
-3. Configura le variabili d'ambiente:
-   - `DATABASE_URL`: La stringa di connessione Neon
-   - `SESSION_SECRET`: Una stringa casuale sicura
+### 2. Effettua il Deployment
 
-4. Clicca su "Deploy"
+Dalla directory principale del progetto, esegui:
 
-Dopo pochi minuti il tuo sito sarà online! Vercel ti fornirà un URL del tipo `tuo-progetto.vercel.app` che potrai condividere con la scuola.
+```bash
+vercel
+```
 
-Se hai domande o problemi durante il deployment, non esitare a chiedere. Il file `vercel.json` è già configurato per gestire correttamente sia il frontend che le API.
+Vercel CLI porrà alcune domande di configurazione:
+
+- **Set up and deploy?** - Sì
+- **Which scope?** - Scegli il tuo account o team
+- **Link to existing project?** - No (per il primo deployment)
+- **Project name?** - Inserisci un nome (o accetta quello predefinito)
+- **Directory?** - `.` (directory corrente)
+- **Override settings?** - No (usa le impostazioni da vercel.json)
+
+### 3. Impostazioni Ambiente
+
+Dopo il deployment, configura le variabili d'ambiente:
+
+```bash
+vercel env add SESSION_SECRET production
+```
+
+Inserisci un valore sicuro quando richiesto.
+
+### 4. Rideploya con le Nuove Variabili
+
+```bash
+vercel --prod
+```
+
+## Verifica il Deployment
+
+Visita l'URL fornito da Vercel al termine del deployment e verifica che l'applicazione funzioni correttamente.
+
+## Aggiornamenti Futuri
+
+Per aggiornare l'applicazione, esegui:
+
+```bash
+vercel --prod
+```
+
+## Note Importanti
+
+- I dati memorizzati localmente verranno persi a ogni deployment
+- Per ambienti di produzione, è fortemente consigliato utilizzare un database persistente come PostgreSQL
