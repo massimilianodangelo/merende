@@ -1,9 +1,23 @@
-# File e cartelle da ignorare durante il deployment su Vercel
-.git
-.gitignore
+# Ignora tutti i file TypeScript per evitare che Vercel provi a interpretarli
+server
+client/src
+shared
+*.ts
+*.tsx
+
+# Ignora file di build locali
+dist/server
+
+# Ignora file di configurazione non necessari per il deploy
+drizzle.config.ts
+postcss.config.js
+tailwind.config.ts
+vercel-build.sh
+tsconfig.json
+
+# Ignora file di dati locali
+storage/
+
+# Ignora file di ambiente di sviluppo
 .env
-.env.local
-README.md
-node_modules
-storage/*.json
-!storage/.gitkeep
+.env.example

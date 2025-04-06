@@ -1,157 +1,73 @@
-# Guida al Deployment dell'Applicazione su Vercel
+# Guida al Deployment su Vercel
 
-Questa guida aggiornata spiega come risolvere i problemi comuni e deployare l'applicazione su Vercel.
+Questa guida descrive come fare il deploy dell'applicazione su Vercel.
 
-## Prerequisiti
+## Architettura del Deployment
 
-1. Un account Vercel (gratuito o a pagamento)
-2. Git installato sul tuo computer
-3. Node.js e npm installati sul tuo computer
+Questa applicazione utilizza un approccio ibrido per il deployment su Vercel:
 
-## Preparazione al Deployment
+1. **Frontend**: Build con Vite, servito staticamente da Vercel
+2. **Backend**: Funzioni serverless JavaScript nella cartella `/api`
 
-L'applicazione è ora configurata in modo semplificato per il deployment su Vercel con i seguenti file:
+## Struttura dei File di Deployment
 
-- `vercel.json` - Configurazione minimalista per Vercel
-- `api/index.js` - Endpoint API semplificato per la versione serverless
-- `.env.production` - Variabili d'ambiente per la produzione
+- `/api/index.js`: Funzione serverless principale che gestisce tutte le richieste API
+- `/api/_health.js`: Endpoint di health check
+- `/api/build.js`: Script di supporto per il processo di build
+- `/vercel.json`: Configurazione del deployment Vercel
+- `/.vercelignore`: File che specifica quali file/cartelle escludere dal deployment
 
-## Risoluzione dell'errore 404: NOT_FOUND
+## Come Funziona
 
-Se riscontri questo errore durante il deployment, segui questi passaggi:
+1. **Frontend**: Il codice React viene compilato in file statici tramite Vite
+2. **Backend**: Invece di compilare il codice TypeScript del server Express originale, utilizziamo funzioni serverless JavaScript pure nella cartella `/api`
+3. **Routing**: Le richieste all'API vengono instradate alla funzione serverless corrispondente
 
-1. **Assicurati che il file `api/index.js` sia corretto**
-   - Il file deve esportare un'app Express e non dipendere da altri moduli del progetto
-   - Deve contenere le rotte API di base
+## Procedura di Deployment
 
-2. **Verifica la configurazione in `vercel.json`**
-   - Utilizza la configurazione semplificata che abbiamo fornito
-   - Non usare configurazioni complesse con framework specifici
-   - Imposta correttamente l'output directory a "dist"
+### Prima del Deployment
 
-3. **Prova a forzare il deployment**
-   ```bash
-   vercel --force
+1. Assicurati che la build del frontend funzioni correttamente:
+   ```
+   npm run build
    ```
 
-4. **Pulisci la cache di Vercel**
-   ```bash
-   vercel --prod --force
-   ```
+2. Verifica che le funzioni serverless in `/api` siano aggiornate
 
-## Deployment via CLI (Linea di Comando)
+### Deployment su Vercel
 
-Il metodo più diretto per deployare l'applicazione è tramite CLI:
+1. **Dashboard Vercel**:
+   - Accedi al dashboard Vercel
+   - Crea un nuovo progetto e collega il repository
+   - Configura le variabili d'ambiente necessarie
 
-### 1. Installa Vercel CLI
+2. **Verifica del Deployment**:
+   - Controlla l'endpoint di health check: `https://tua-app.vercel.app/api/health`
+   - Verifica che il frontend si carichi correttamente
+   - Verifica che le API funzionino come previsto
 
-```bash
-npm i -g vercel
-```
+## Variabili d'Ambiente
 
-### 2. Login a Vercel
+Se necessario, configura le seguenti variabili d'ambiente nel progetto Vercel:
 
-```bash
-vercel login
-```
+- `DATABASE_URL`: URL del database (se applicabile)
+- `NODE_ENV`: Impostato automaticamente da Vercel
 
-### 3. Effettua il Deployment
+## Troubleshooting
 
-```bash
-vercel
-```
+### Errore 404 sulle API
 
-Quando richiesto, utilizza queste opzioni:
-- **Output Directory**: `dist`
-- **Development Command**: `npm run dev`
-- **Build Command**: `npm run build`
+Se riscontri errori 404 sulle chiamate API:
+- Verifica che le rotte nel file `vercel.json` siano configurate correttamente
+- Controlla i log del deployment per errori
+- Verifica che le funzioni serverless in `/api` siano state deployate correttamente
 
-### 4. Aggiungi Variabili d'Ambiente
+### Problemi di Compilazione
 
-```bash
-vercel env add SESSION_SECRET production
-```
+- Vercel potrebbe avere difficoltà con il codice TypeScript: usa l'approccio serverless JavaScript puro
+- I percorsi di import devono essere relativi e corretti nel contesto del deployment
 
-### 5. Rideploya in Produzione
+## Riferimenti
 
-```bash
-vercel --prod
-```
-
-## Passaggi per il Deployment via Dashboard
-
-### 1. Prepara il Repository
-
-Assicurati che tutte le modifiche siano state salvate e committate nel repository Git.
-
-### 2. Collegati a Vercel
-
-1. Accedi al tuo account Vercel: [https://vercel.com/login](https://vercel.com/login)
-2. Dalla dashboard, clicca su "Add New..." e poi "Project"
-3. Importa il repository dalla tua fonte Git
-
-### 3. Configura il Progetto
-
-Nella schermata di configurazione:
-
-1. **Nome Progetto**: Inserisci un nome a tua scelta
-2. **Framework Preset**: Seleziona "Other" (non Vite)
-3. **Root Directory**: Mantieni il valore predefinito "./"
-4. **Build Command**: `npm run build`
-5. **Output Directory**: `dist`
-6. **Install Command**: `npm install`
-7. **Development Command**: `npm run dev`
-
-### 4. Override della Configurazione Framework
-
-Nel pannello di configurazione avanzata:
-1. Imposta **Framework** su "null" o deseleziona il rilevamento automatico
-2. Verifica che le configurazioni in vercel.json vengano utilizzate
-
-### 5. Configura le Variabili d'Ambiente
-
-Aggiungi le seguenti variabili:
-- `NODE_ENV`: `production`
-- `SESSION_SECRET`: [Inserisci un valore segreto sicuro]
-
-### 6. Deploy
-
-Clicca sul pulsante "Deploy" per iniziare il deployment.
-
-## Test del Deployment
-
-Dopo il deployment, verifica:
-
-1. L'endpoint API di base: `https://tuo-progetto.vercel.app/api`
-2. L'endpoint health: `https://tuo-progetto.vercel.app/api/health`
-3. La pagina principale dell'applicazione
-
-## Limitazioni Note
-
-1. **Serverless Function**: Le API in modalità serverless hanno alcune limitazioni:
-   - Timeout massimo di 10 secondi per risposta
-   - Dimensione massima del payload di 4.5MB
-   - Stato non persistente tra le chiamate
-
-2. **Persistenza dei Dati**: 
-   - I dati in memoria verranno persi tra i deployment
-   - Considera l'integrazione con un database remoto (Neon, PlanetScale)
-
-## Configurazione Alternativa
-
-Se questa configurazione non funziona, puoi provare:
-
-1. **Separare Frontend e Backend**:
-   - Deployare solo il frontend su Vercel
-   - Deployare il backend su Render.com o Railway
-
-2. **Utilizzare Next.js**:
-   - Migrare l'applicazione a Next.js per una migliore integrazione con Vercel
-   - Next.js offre supporto nativo per API Routes che funzionano bene su Vercel
-
-## Note Finali
-
-- Verifica sempre i log in caso di problemi (`vercel logs`)
-- Per problemi persistenti, contatta il supporto Vercel
-- Considera l'utilizzo di un database esterno per dati persistenti
-- Monitoraggio: `vercel inspect [deployment]` per analizzare le performance
+- [Documentazione Vercel](https://vercel.com/docs)
+- [Guida alle Funzioni Serverless](https://vercel.com/docs/serverless-functions/introduction)
