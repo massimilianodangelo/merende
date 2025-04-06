@@ -3,21 +3,14 @@
   "buildCommand": "npm run build",
   "installCommand": "npm install",
   "outputDirectory": "client/dist",
-  "framework": "vite",
-  "builds": [
-    {
-      "src": "server/index.js",
-      "use": "@vercel/node"
-    }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/(.*)", "destination": "/" }
   ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "server/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/"
+  "functions": {
+    "api/index.js": {
+      "memory": 1024,
+      "maxDuration": 10
     }
-  ]
+  }
 }
