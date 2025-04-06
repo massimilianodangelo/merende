@@ -1,69 +1,60 @@
-# Guida Rapida al Deployment con Vercel CLI
+# Guida al Deployment su Vercel
 
-Se preferisci deployare l'applicazione usando la linea di comando invece dell'interfaccia web, ecco una guida rapida.
-
-## Prerequisiti
-
-1. Node.js e npm installati
-2. Vercel CLI installato (`npm i -g vercel`)
-3. Un account Vercel
+Questa guida spiega come deployare l'applicazione su Vercel.
 
 ## Passaggi per il Deployment
 
-### 1. Login a Vercel
+1. **Assicurati di avere un account Vercel**
+   - Registrati su [vercel.com](https://vercel.com) se non hai ancora un account.
 
-```bash
-vercel login
-```
+2. **Collega il tuo repository**
+   - Puoi importare il progetto direttamente da GitHub, GitLab o Bitbucket.
+   - In alternativa, puoi usare il CLI di Vercel per deployare dalla tua macchina locale.
 
-Segui le istruzioni per autenticarti con il tuo account Vercel.
+3. **Configura le variabili d'ambiente**
+   - Copia le variabili dal file `.env.example` e aggiungile al tuo progetto Vercel.
+   - Assicurati di impostare `NODE_ENV=production`.
 
-### 2. Effettua il Deployment
+4. **Avvia il deployment**
+   - Se usi la dashboard di Vercel, clicca su "Deploy".
+   - Se usi il CLI, esegui `vercel` nella directory del progetto.
 
-Dalla directory principale del progetto, esegui:
+5. **Verifica il deployment**
+   - Dopo il completamento, verifica che l'applicazione funzioni correttamente.
+   - Controlla che le API rispondano correttamente visitando `/api/health`.
 
-```bash
-vercel
-```
+## Risoluzione dei problemi comuni
 
-Vercel CLI porrà alcune domande di configurazione:
+### Errore 404: NOT_FOUND
 
-- **Set up and deploy?** - Sì
-- **Which scope?** - Scegli il tuo account o team
-- **Link to existing project?** - No (per il primo deployment)
-- **Project name?** - Inserisci un nome (o accetta quello predefinito)
-- **Directory?** - `.` (directory corrente)
-- **Override settings?** - No (usa le impostazioni da vercel.json)
+Se ricevi questo errore, verifica:
 
-### 3. Impostazioni Ambiente
+1. **File vercel.json**: Controlla che il file di configurazione sia corretto.
+2. **File api/index.js**: Assicurati che sia accessibile e configurato per funzionare come un'API serverless.
+3. **Routing**: Verifica che le rotte nel file `vercel.json` corrispondano alla struttura dell'applicazione.
+4. **Build**: Prova a forzare il deployment con `vercel --force`.
 
-Dopo il deployment, configura le variabili d'ambiente:
+### Errore durante il build
 
-```bash
-vercel env add SESSION_SECRET production
-```
+Se il processo di build fallisce:
 
-Inserisci un valore sicuro quando richiesto.
+1. **Log di build**: Controlla i log per identificare l'errore specifico.
+2. **Dipendenze**: Verifica che tutte le dipendenze necessarie siano incluse nel package.json.
+3. **Script di build**: Assicurati che lo script di build in package.json funzioni localmente.
+4. **Node.js**: Verifica che la versione di Node.js usata da Vercel sia compatibile con il tuo progetto.
 
-### 4. Rideploya con le Nuove Variabili
+## Ottimizzare il deployment
 
-```bash
-vercel --prod
-```
+Per migliorare le performance:
 
-## Verifica il Deployment
+1. **Comprimi le risorse statiche** per ridurre il tempo di caricamento.
+2. **Utilizza la cache** per migliorare i tempi di risposta.
+3. **Implementa il lazy loading** per le risorse non critiche.
+4. **Configura correttamente i CORS** per garantire la sicurezza delle API.
 
-Visita l'URL fornito da Vercel al termine del deployment e verifica che l'applicazione funzioni correttamente.
+## Supporto
 
-## Aggiornamenti Futuri
+Se hai problemi con il deployment, puoi:
 
-Per aggiornare l'applicazione, esegui:
-
-```bash
-vercel --prod
-```
-
-## Note Importanti
-
-- I dati memorizzati localmente verranno persi a ogni deployment
-- Per ambienti di produzione, è fortemente consigliato utilizzare un database persistente come PostgreSQL
+1. **Consultare la documentazione ufficiale di Vercel**: [vercel.com/docs](https://vercel.com/docs)
+2. **Aprire un issue** nel repository del progetto per chiedere aiuto.
