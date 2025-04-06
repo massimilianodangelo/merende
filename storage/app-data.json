@@ -21,7 +21,7 @@
         {
           "username": "prova@amministratore.it",
           "password": "2d836d0159982302aeb92485af462eb7fdd8c0d46cbd40f65437d020e4223d4716199f69b0c3d3b3ad2a5262ba183e806a1fd5d61740ab4fd479be87c286e306.648e1aedc9cc3f1c7e2319d2a8a6f5d0",
-          "firstName": "Gestione",
+          "firstName": "Prova",
           "lastName": "Ordini",
           "classRoom": "Admin",
           "email": "prova@amministratore.it",
@@ -177,16 +177,76 @@
         }
       ]
     ],
-    "orders": [],
-    "orderItems": [],
+    "orders": [
+      [
+        5,
+        {
+          "userId": 3,
+          "status": "cancelled",
+          "total": 5.5,
+          "orderDate": "2025-03-30T14:00:00.000Z",
+          "id": 5,
+          "createdAt": "2025-03-30T15:59:38.420Z"
+        }
+      ],
+      [
+        6,
+        {
+          "userId": 4,
+          "status": "cancelled",
+          "total": 4,
+          "orderDate": "2025-03-30T14:15:00.000Z",
+          "id": 6,
+          "createdAt": "2025-03-30T15:59:43.048Z"
+        }
+      ]
+    ],
+    "orderItems": [
+      [
+        7,
+        {
+          "orderId": 5,
+          "productId": 1,
+          "quantity": 2,
+          "price": 2.5,
+          "id": 7
+        }
+      ],
+      [
+        8,
+        {
+          "orderId": 5,
+          "productId": 3,
+          "quantity": 1,
+          "price": 0.5,
+          "id": 8
+        }
+      ],
+      [
+        9,
+        {
+          "orderId": 6,
+          "productId": 2,
+          "quantity": 1,
+          "price": 3,
+          "id": 9
+        }
+      ],
+      [
+        10,
+        {
+          "orderId": 6,
+          "productId": 5,
+          "quantity": 1,
+          "price": 1,
+          "id": 10
+        }
+      ]
+    ],
     "userId": 23,
     "productId": 14,
     "orderId": 14,
-    "orderItemId": 22,
-    "deletedUserIds": [
-      3,
-      4
-    ]
+    "orderItemId": 22
   },
   "availableClasses": [
     "1A",

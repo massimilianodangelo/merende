@@ -1,4 +1,7 @@
-// Questo file è necessario per Vercel
-// Verrà sovrascritto dal build process che compila da index.ts
+const express = require("express");
+const app = express();
 
-import './index.ts';
+app.get("/", function (req, res) {
+  res.send("Hello World");
+});
+app.listen(3000);
