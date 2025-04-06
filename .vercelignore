@@ -1,0 +1,9 @@
+# File e cartelle da ignorare durante il deployment su Vercel
+.git
+.gitignore
+.env
+.env.local
+README.md
+node_modules
+storage/*.json
+!storage/.gitkeep
