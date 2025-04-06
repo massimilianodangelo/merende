@@ -1,0 +1,48 @@
+April 6, 2025 at 5:28 PM
+failed
+3ee7745
+Add files via upload
+
+Rollback
+Exited with status 1 while building your code.
+Read our docs for common ways to troubleshoot your deploy.
+
+All logs
+Search
+Search
+
+Live tail
+GMT+2
+
+
+==> Cloning from https://github.com/massida06/merende
+==> Checking out commit 3ee7745e7510fa6ec3b860a6a39dd91079324c75 in branch main
+==> Using Node.js version 22.14.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Using Bun version 1.1.0 (default)
+==> Docs on specifying a bun version: https://render.com/docs/bun-version
+==> Running build command 'npm install && mkdir -p node_modules/.bin && npm install -g vite esbuild && export PATH="$PATH:$(npm bin -g)" && npx vite build && npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist'...
+added 383 packages, and audited 384 packages in 13s
+51 packages are looking for funding
+  run `npm fund` for details
+1 moderate severity vulnerability
+To address all issues, run:
+  npm audit fix
+Run `npm audit` for details.
+added 10 packages in 6s
+3 packages are looking for funding
+  run `npm fund` for details
+failed to load config from /opt/render/project/src/vite.config.ts
+error during build:
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'vite' imported from /opt/render/project/src/node_modules/.vite-temp/vite.config.ts.timestamp-1743953379550-f932e805c6b7c.mjs
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:268:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:854:18)
+    at defaultResolve (node:internal/modules/esm/resolve:984:11)
+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:685:12)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:634:25)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:617:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:273:38)
+    at ModuleJob._link (node:internal/modules/esm/module_job:135:49)
+==> Build failed 😞
+==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
