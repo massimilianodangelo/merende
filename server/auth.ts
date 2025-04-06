@@ -55,16 +55,22 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
+  // Determina se l'app è in produzione
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  // Configurazione sessioni ottimizzata per sicurezza
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "school-snack-secret-key",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false, // Cambiato a false per evitare sessioni vuote
     store: storage.sessionStore,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
-      sameSite: 'lax',
-      secure: false, // Replit verrà eseguito su HTTP in ambiente di sviluppo
-      httpOnly: true
+      sameSite: isProduction ? 'strict' : 'lax', // Più restrittivo in produzione
+      secure: isProduction, // Sicuro in produzione, non in sviluppo
+      httpOnly: true,
+      path: '/',
+      domain: isProduction ? process.env.DOMAIN || undefined : undefined // Solo in produzione imposta il dominio
     }
   };
 

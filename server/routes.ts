@@ -6,6 +6,11 @@ import { insertOrderSchema, insertOrderItemSchema, insertProductSchema, insertUs
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint per Render
+  app.get("/api/health", (_req, res) => {
+    res.status(200).json({ status: "ok" });
+  });
+
   // Setup authentication routes
   setupAuth(app);
   
