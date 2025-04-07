@@ -151,9 +151,6 @@ export default function HomePage() {
           </div>
           
           <div className="hidden sm:flex items-center mt-2 sm:mt-0">
-            <span className="ml-4 text-sm text-gray-500 hidden md:inline-block">
-              Sistema di ordinazione merende
-            </span>
             <span className="mr-4 text-sm font-medium text-gray-700 hidden md:inline-block">
               {user?.firstName} {user?.lastName} - {user?.classRoom}
             </span>

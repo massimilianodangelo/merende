@@ -75,6 +75,21 @@
           "isUserAdmin": false,
           "id": 5
         }
+      ],
+      [
+        6,
+        {
+          "firstName": "rtrtrty",
+          "lastName": "trtrr",
+          "classRoom": "1B",
+          "username": "ffdfgfd@gmail.com",
+          "email": "ffdfgfd@gmail.com",
+          "password": "ea6bc07242f2a8ca2360902d4189a8a72993699ed8934da7dd05d3ea3808b417cf3e946111572b687b0ca0357ad68db9b707aa1e8377b152147489b5aac9d769.56baaa1a697368395215642302306348",
+          "isRepresentative": false,
+          "id": 6,
+          "isAdmin": false,
+          "isUserAdmin": false
+        }
       ]
     ],
     "products": [
