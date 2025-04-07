@@ -727,9 +727,10 @@ export class MemStorage implements IStorage {
     }
   }
   
-  async promoteStudents(): Promise<{ updated: number, classes: { from: string, to: string }[] }> {
+  async promoteStudents(): Promise<{ updated: number, classes: { from: string, to: string }[], deleted: number }> {
     const updatedClasses: { from: string, to: string }[] = [];
     let updatedCount = 0;
+    let deletedCount = 0;
     
     // Ottiene tutti gli utenti
     const allUsers = Array.from(this.users.values());
@@ -747,19 +748,30 @@ export class MemStorage implements IStorage {
         const currentYear = parseInt(match[1], 10);
         const section = match[2];
         
-        // Crea la nuova classe incrementando l'anno
-        const newYear = currentYear + 1;
-        const newClassName = `${newYear}${section}`;
-        
-        // Aggiorna la classe dello studente
-        await this.updateUser(student.id, { classRoom: newClassName });
-        
-        updatedCount++;
-        
-        // Aggiungi questa modifica all'elenco
-        const update = { from: className, to: newClassName };
-        if (!updatedClasses.some(uc => uc.from === update.from && uc.to === update.to)) {
-          updatedClasses.push(update);
+        // Se lo studente è in classe 5, eliminalo invece di promuoverlo
+        if (currentYear === 5) {
+          // Elimina lo studente
+          await this.deleteUser(student.id);
+          deletedCount++;
+          
+          // Non aggiungiamo agli updatedClasses perché non è una promozione
+          // ma eliminiamo lo studente
+          console.log(`Eliminato studente ${student.firstName} ${student.lastName} della classe ${className}`);
+        } else {
+          // Crea la nuova classe incrementando l'anno
+          const newYear = currentYear + 1;
+          const newClassName = `${newYear}${section}`;
+          
+          // Aggiorna la classe dello studente
+          await this.updateUser(student.id, { classRoom: newClassName });
+          
+          updatedCount++;
+          
+          // Aggiungi questa modifica all'elenco
+          const update = { from: className, to: newClassName };
+          if (!updatedClasses.some(uc => uc.from === update.from && uc.to === update.to)) {
+            updatedClasses.push(update);
+          }
         }
       }
     }
@@ -769,7 +781,8 @@ export class MemStorage implements IStorage {
     
     return { 
       updated: updatedCount, 
-      classes: updatedClasses 
+      classes: updatedClasses,
+      deleted: deletedCount
     };
   }
 }

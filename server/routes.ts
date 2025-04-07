@@ -646,10 +646,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`Promozione completata: ${result.updated} studenti aggiornati`);
       console.log("Classi aggiornate:", result.classes);
+      console.log(`Studenti eliminati (classe 5): ${result.deleted}`);
       
       res.status(200).json({ 
-        message: `Promossi ${result.updated} studenti con successo`, 
+        message: `Promossi ${result.updated} studenti con successo, eliminati ${result.deleted} studenti di classe 5`, 
         updatedCount: result.updated,
+        deletedCount: result.deleted,
         classChanges: result.classes 
       });
     } catch (error) {

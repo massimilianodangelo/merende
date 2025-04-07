@@ -30,6 +30,51 @@
           "isUserAdmin": false,
           "id": 1
         }
+      ],
+      [
+        3,
+        {
+          "username": "dsfcd@gmail.com",
+          "password": "364b5790078d56c5a3a5b68ed89194821d64e9eb3fc5db8f66330389e86b32041791698139a34efa01a398da2caac7a8bc46b37a2c21860a6f7912f229badff6.3ea35f25918221145b71899bbf25558a",
+          "firstName": "fdsdas",
+          "lastName": "dsf",
+          "classRoom": "3G",
+          "email": "dsfcd@gmail.com",
+          "isRepresentative": false,
+          "isAdmin": false,
+          "isUserAdmin": false,
+          "id": 3
+        }
+      ],
+      [
+        4,
+        {
+          "username": "ghfghghjgjyt@gmail.com",
+          "password": "2f93c9e48831838a6e07f09fc640463954c12440d93c51c10923866a25ac6eb3e86988cde6599e7d6764a13dff0a754152fee3e4fe56cf3e87b8a32ae63159b4.87e4d6d8d330c33a94c1cc6b931812ba",
+          "firstName": "sdfgdrgrrt",
+          "lastName": "dsadad",
+          "classRoom": "4D",
+          "email": "ghfghghjgjyt@gmail.com",
+          "isRepresentative": false,
+          "isAdmin": false,
+          "isUserAdmin": false,
+          "id": 4
+        }
+      ],
+      [
+        5,
+        {
+          "username": "dsftrg@gmail.com",
+          "password": "ecaaaddda53efbdae943408105a55612ae44d9036315775f10db79da7a421429e2f9868a5706913588e313da9b31331b45cc4a70b0003da7b3ad46c0846d9f52.9bdfc984a10faf25babab0f5bac6d74a",
+          "firstName": "fegrth",
+          "lastName": "htyjhyui",
+          "classRoom": "6F",
+          "email": "dsftrg@gmail.com",
+          "isRepresentative": false,
+          "isAdmin": false,
+          "isUserAdmin": false,
+          "id": 5
+        }
       ]
     ],
     "products": [
@@ -183,10 +228,7 @@
     "productId": 14,
     "orderId": 14,
     "orderItemId": 22,
-    "deletedUserIds": [
-      3,
-      4
-    ]
+    "deletedUserIds": []
   },
   "availableClasses": [
     "1A",

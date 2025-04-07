@@ -327,7 +327,7 @@ export default function UserAdminPage() {
     onSuccess: (data) => {
       toast({
         title: "Studenti promossi",
-        description: `${data.updatedCount} studenti sono stati promossi alla classe successiva.`,
+        description: `${data.updatedCount} studenti sono stati promossi alla classe successiva.${data.deletedCount > 0 ? ` ${data.deletedCount} studenti di classe 5 sono stati eliminati.` : ''}`,
       });
       // Mostra le classi aggiornate
       if (data.classChanges && data.classChanges.length > 0) {
@@ -359,7 +359,7 @@ export default function UserAdminPage() {
   
   // Handler per promuovere gli studenti alla classe successiva
   const handlePromoteStudents = () => {
-    if (window.confirm("Stai per aggiornare le classi di tutti gli studenti. Gli studenti saranno promossi alla classe successiva (es. da 2C a 3C). Vuoi procedere?")) {
+    if (window.confirm("Stai per aggiornare le classi di tutti gli studenti. Gli studenti saranno promossi alla classe successiva (es. da 2C a 3C), mentre gli studenti di classe 5 saranno eliminati. Vuoi procedere?")) {
       promoteStudentsMutation.mutate();
     }
   };
@@ -497,28 +497,14 @@ export default function UserAdminPage() {
                   </Button>
                   {user?.isUserAdmin && (
                     <>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="flex items-center gap-2">
-                            <Settings className="h-4 w-4" />
-                            Azioni Avanzate
-                            <ChevronDown className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={handlePromoteStudents}>
-                            <GraduationCap className="mr-2 h-4 w-4" />
-                            <span>Promuovi Studenti</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            className="text-red-500 focus:text-red-500" 
-                            onClick={handleDeleteAllNonAdminUsers}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            <span>Elimina Tutti gli Studenti</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <Button 
+                        variant="outline"
+                        className="flex items-center gap-2"
+                        onClick={handlePromoteStudents}
+                      >
+                        <GraduationCap className="h-4 w-4" />
+                        Promuovi Studenti
+                      </Button>
                       <Button 
                         onClick={() => setIsManageClassesOpen(true)} 
                         variant="outline"
