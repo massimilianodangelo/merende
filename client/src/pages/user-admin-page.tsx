@@ -462,13 +462,6 @@ export default function UserAdminPage() {
                       >
                         Gestione Classi
                       </Button>
-                      <Button 
-                        onClick={handleDeleteAllNonAdminUsers} 
-                        variant="destructive"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Elimina Studenti e Rappresentanti
-                      </Button>
                     </>
                   )}
                   <Button onClick={() => setIsCreateUserDialogOpen(true)}>
