@@ -598,8 +598,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Ottieni tutti gli utenti
       const allUsers = await storage.getAllUsers();
       
-      // Includi tutti gli utenti, anche quelli con ID 1 e 2
-      const usersToDelete = allUsers;
+      // Filtra solo gli studenti e i rappresentanti
+      // Esclude gli utenti admin (isAdmin) e admin utenti (isUserAdmin)
+      const usersToDelete = allUsers.filter(user => !user.isAdmin && !user.isUserAdmin);
+      
+      console.log(`Eliminazione di ${usersToDelete.length} utenti (solo studenti e rappresentanti)`);
       
       let deletedCount = 0;
       
