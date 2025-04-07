@@ -87,7 +87,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
           <div className="flex items-center justify-between w-full sm:w-auto">
             <div>
-              <h1 className="text-xl font-semibold text-gray-800">Distribuzione merende</h1>
+              <h1 className="text-xl font-semibold text-gray-800"></h1>
               <span className="text-xs sm:text-sm text-gray-500 block sm:hidden">
                 {user?.firstName} {user?.lastName} - {user?.classRoom}
               </span>
