@@ -171,13 +171,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       const orders = await storage.getOrdersByUser(userId);
       
-      // For each order, get the order items
+      // For each order, get the order items with product details
       const ordersWithItems = await Promise.all(
         orders.map(async (order) => {
           const items = await storage.getOrderItems(order.id);
+          
+          // Get product details for each order item
+          const itemsWithProducts = await Promise.all(
+            items.map(async (item) => {
+              const product = await storage.getProduct(item.productId);
+              return {
+                ...item,
+                product
+              };
+            })
+          );
+          
           return {
             ...order,
-            items,
+            items: itemsWithProducts,
           };
         })
       );
@@ -281,9 +293,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const items = await storage.getOrderItems(order.id);
           const user = await storage.getUser(order.userId);
           
+          // Get product details for each order item
+          const itemsWithProducts = await Promise.all(
+            items.map(async (item) => {
+              const product = await storage.getProduct(item.productId);
+              return {
+                ...item,
+                product
+              };
+            })
+          );
+          
           return {
             ...order,
-            items,
+            items: itemsWithProducts,
             user: user ? {
               id: user.id,
               firstName: user.firstName,
@@ -330,9 +353,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         orders.map(async (order) => {
           const items = await storage.getOrderItems(order.id);
           const user = await storage.getUser(order.userId);
+          
+          // Get product details for each order item
+          const itemsWithProducts = await Promise.all(
+            items.map(async (item) => {
+              const product = await storage.getProduct(item.productId);
+              return {
+                ...item,
+                product
+              };
+            })
+          );
+          
           return { 
             ...order, 
-            items,
+            items: itemsWithProducts,
             user: user ? {
               id: user.id,
               firstName: user.firstName,

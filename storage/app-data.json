@@ -90,6 +90,36 @@
           "isAdmin": false,
           "isUserAdmin": false
         }
+      ],
+      [
+        7,
+        {
+          "firstName": "ddfgd",
+          "lastName": "dfgd",
+          "classRoom": "1B",
+          "username": "dsgdf@gmail.com",
+          "email": "dsgdf@gmail.com",
+          "password": "0e768edffe47203ac5faf10c10f7cae9ce49a49a940e628f8f12adec3a4466daa80fce6fd400168e0c9d016bcbbf9bf4175a1ccdabc3f033793f9c21e645a87c.c711b492dae54be179b38b37f67e2604",
+          "isRepresentative": false,
+          "id": 7,
+          "isAdmin": false,
+          "isUserAdmin": false
+        }
+      ],
+      [
+        8,
+        {
+          "firstName": "massimiliano",
+          "lastName": "d'angelo",
+          "classRoom": "2C",
+          "username": "fefsd@gmail.com",
+          "email": "fefsd@gmail.com",
+          "password": "c23c1801e592d61ad89e2f320195f61e055f091a98f3a9ace1c315985c39d6b8a20e1b9032cbb4cf1b1919c8aa3964e581006b634f14cc38d2e758c35b277794.6a92e0c1561c4d68cccd2e5871dab186",
+          "isRepresentative": true,
+          "id": 8,
+          "isAdmin": false,
+          "isUserAdmin": false
+        }
       ]
     ],
     "products": [
@@ -237,12 +267,35 @@
         }
       ]
     ],
-    "orders": [],
-    "orderItems": [],
+    "orders": [
+      [
+        14,
+        {
+          "userId": 8,
+          "status": "pending",
+          "total": 2,
+          "orderDate": "2025-04-07T20:06:51.554Z",
+          "id": 14,
+          "createdAt": "2025-04-07T20:06:51.722Z"
+        }
+      ]
+    ],
+    "orderItems": [
+      [
+        22,
+        {
+          "orderId": 14,
+          "productId": 1,
+          "quantity": 1,
+          "price": 2,
+          "id": 22
+        }
+      ]
+    ],
     "userId": 23,
     "productId": 14,
-    "orderId": 14,
-    "orderItemId": 22,
+    "orderId": 15,
+    "orderItemId": 23,
     "deletedUserIds": []
   },
   "availableClasses": [
