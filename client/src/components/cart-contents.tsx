@@ -79,29 +79,31 @@ export function CartContents({ onClose, onOrderPlaced }: CartContentsProps) {
         ) : (
           <ul className="divide-y divide-gray-200">
             {items.map((item) => (
-              <li key={item.product.id} className="py-4 flex justify-between items-center">
+              <li key={item.product.id} className="py-4 flex flex-col sm:flex-row justify-between gap-2">
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-900">{item.product.name}</p>
                   <p className="text-sm text-gray-500">{formatCurrency(item.product.price)}</p>
                 </div>
-                <div className="flex items-center">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                  >
-                    <MinusIcon className="h-4 w-4" />
-                  </Button>
-                  <span className="mx-2 text-gray-700">{item.quantity}</span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                  >
-                    <PlusIcon className="h-4 w-4" />
-                  </Button>
+                <div className="flex items-center justify-between sm:justify-end">
+                  <div className="flex items-center border rounded-md p-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                    >
+                      <MinusIcon className="h-4 w-4" />
+                    </Button>
+                    <span className="mx-2 text-gray-700 min-w-[20px] text-center">{item.quantity}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                    >
+                      <PlusIcon className="h-4 w-4" />
+                    </Button>
+                  </div>
                   <Button
                     variant="ghost"
                     size="icon"

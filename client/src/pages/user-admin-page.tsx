@@ -485,62 +485,122 @@ export default function UserAdminPage() {
                       <Loader2 className="h-8 w-8 animate-spin text-primary" />
                     </div>
                   ) : filteredUsers && filteredUsers.length > 0 ? (
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>ID</TableHead>
-                            <TableHead>Nome</TableHead>
-                            <TableHead>Cognome</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Classe</TableHead>
-                            <TableHead>Ruoli</TableHead>
-                            <TableHead>Azioni</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
+                    <div className="overflow-x-auto -mx-4 sm:mx-0">
+                      <div className="sm:hidden">
+                        {/* Vista mobile - Cards invece di tabella */}
+                        <div className="space-y-4 px-4">
                           {filteredUsers.map((user) => (
-                            <TableRow key={user.id}>
-                              <TableCell>{user.id}</TableCell>
-                              <TableCell>{user.firstName}</TableCell>
-                              <TableCell>{user.lastName}</TableCell>
-                              <TableCell>{user.username}</TableCell>
-                              <TableCell>{user.classRoom}</TableCell>
-                              <TableCell>
-                                <div className="flex flex-col space-y-1">
-                                  {user.isAdmin && (
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                      Amministratore
-                                    </span>
-                                  )}
-                                  {user.isUserAdmin && (
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                      Admin Utenti
-                                    </span>
-                                  )}
-                                  {user.isRepresentative && (
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                      Rappresentante
-                                    </span>
-                                  )}
-                                  {!user.isAdmin && !user.isRepresentative && !user.isUserAdmin && (
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                      Studente
-                                    </span>
-                                  )}
+                            <div key={user.id} className="bg-white p-4 rounded-lg shadow-sm border">
+                              <div className="flex justify-between items-start mb-2">
+                                <div>
+                                  <p className="font-medium">{user.firstName} {user.lastName}</p>
+                                  <p className="text-sm text-gray-500">{user.username}</p>
                                 </div>
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex space-x-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleEditUser(user)}
-                                  >
-                                    <Edit className="h-4 w-4 mr-1" /> Modifica
-                                  </Button>
-                                  {/* Mostra il pulsante elimina per tutti gli utenti */}
-                                  {(
+                                <div className="text-sm text-gray-500">
+                                  ID: {user.id} - {user.classRoom}
+                                </div>
+                              </div>
+                              
+                              <div className="flex flex-wrap gap-1 mb-3">
+                                {user.isAdmin && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    Amministratore
+                                  </span>
+                                )}
+                                {user.isUserAdmin && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    Admin Utenti
+                                  </span>
+                                )}
+                                {user.isRepresentative && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Rappresentante
+                                  </span>
+                                )}
+                                {!user.isAdmin && !user.isRepresentative && !user.isUserAdmin && (
+                                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    Studente
+                                  </span>
+                                )}
+                              </div>
+                              
+                              <div className="flex space-x-2 justify-end">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEditUser(user)}
+                                >
+                                  <Edit className="h-4 w-4 mr-1" /> Modifica
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteUser(user.id)}
+                                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-1" /> Elimina
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Vista desktop - Tabella */}
+                      <div className="hidden sm:block">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>ID</TableHead>
+                              <TableHead>Nome</TableHead>
+                              <TableHead>Cognome</TableHead>
+                              <TableHead>Email</TableHead>
+                              <TableHead>Classe</TableHead>
+                              <TableHead>Ruoli</TableHead>
+                              <TableHead>Azioni</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {filteredUsers.map((user) => (
+                              <TableRow key={user.id}>
+                                <TableCell>{user.id}</TableCell>
+                                <TableCell>{user.firstName}</TableCell>
+                                <TableCell>{user.lastName}</TableCell>
+                                <TableCell>{user.username}</TableCell>
+                                <TableCell>{user.classRoom}</TableCell>
+                                <TableCell>
+                                  <div className="flex flex-col space-y-1">
+                                    {user.isAdmin && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        Amministratore
+                                      </span>
+                                    )}
+                                    {user.isUserAdmin && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        Admin Utenti
+                                      </span>
+                                    )}
+                                    {user.isRepresentative && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Rappresentante
+                                      </span>
+                                    )}
+                                    {!user.isAdmin && !user.isRepresentative && !user.isUserAdmin && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        Studente
+                                      </span>
+                                    )}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleEditUser(user)}
+                                    >
+                                      <Edit className="h-4 w-4 mr-1" /> Modifica
+                                    </Button>
                                     <Button
                                       variant="ghost"
                                       size="sm"
@@ -549,13 +609,13 @@ export default function UserAdminPage() {
                                     >
                                       <Trash2 className="h-4 w-4 mr-1" /> Elimina
                                     </Button>
-                                  )}
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center h-64">
@@ -591,7 +651,56 @@ export default function UserAdminPage() {
                         return (
                           <div key={className} className="bg-white rounded-lg p-4 shadow-sm border">
                             <h3 className="text-lg font-medium mb-4">Classe {className} ({usersInClass.length} utenti)</h3>
-                            <div className="overflow-x-auto">
+                            
+                            {/* Vista mobile per utenti di classe */}
+                            <div className="sm:hidden">
+                              <div className="space-y-4">
+                                {usersInClass.map((user) => (
+                                  <div key={user.id} className="bg-gray-50 p-3 rounded-lg">
+                                    <div className="flex justify-between items-start mb-2">
+                                      <div>
+                                        <p className="font-medium">{user.firstName} {user.lastName}</p>
+                                        <p className="text-sm text-gray-500">{user.username}</p>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="flex flex-wrap gap-1 mb-3">
+                                      {user.isRepresentative && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                          Rappresentante
+                                        </span>
+                                      )}
+                                      {!user.isAdmin && !user.isRepresentative && !user.isUserAdmin && (
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                          Studente
+                                        </span>
+                                      )}
+                                    </div>
+                                    
+                                    <div className="flex space-x-2 justify-end">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleEditUser(user)}
+                                      >
+                                        <Edit className="h-4 w-4 mr-1" /> Modifica
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleDeleteUser(user.id)}
+                                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                      >
+                                        <Trash2 className="h-4 w-4 mr-1" /> Elimina
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            {/* Vista desktop per utenti di classe */}
+                            <div className="hidden sm:block overflow-x-auto">
                               <Table>
                                 <TableHeader>
                                   <TableRow>
@@ -631,16 +740,14 @@ export default function UserAdminPage() {
                                           >
                                             <Edit className="h-4 w-4 mr-1" /> Modifica
                                           </Button>
-                                          {(
-                                            <Button
-                                              variant="ghost"
-                                              size="sm"
-                                              onClick={() => handleDeleteUser(user.id)}
-                                              className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                            >
-                                              <Trash2 className="h-4 w-4 mr-1" /> Elimina
-                                            </Button>
-                                          )}
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleDeleteUser(user.id)}
+                                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                          >
+                                            <Trash2 className="h-4 w-4 mr-1" /> Elimina
+                                          </Button>
                                         </div>
                                       </TableCell>
                                     </TableRow>
@@ -656,7 +763,56 @@ export default function UserAdminPage() {
                       {filteredUsers.some(user => user.classRoom === "Admin") && (
                         <div className="bg-white rounded-lg p-4 shadow-sm border">
                           <h3 className="text-lg font-medium mb-4">Amministratori del sistema</h3>
-                          <div className="overflow-x-auto">
+                          
+                          {/* Vista mobile per amministratori */}
+                          <div className="sm:hidden">
+                            <div className="space-y-4">
+                              {filteredUsers.filter(u => u.classRoom === "Admin").map((user) => (
+                                <div key={user.id} className="bg-gray-50 p-3 rounded-lg">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <div>
+                                      <p className="font-medium">{user.firstName} {user.lastName}</p>
+                                      <p className="text-sm text-gray-500">{user.username}</p>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex flex-wrap gap-1 mb-3">
+                                    {user.isAdmin && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        Amministratore
+                                      </span>
+                                    )}
+                                    {user.isUserAdmin && (
+                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        Admin Utenti
+                                      </span>
+                                    )}
+                                  </div>
+                                  
+                                  <div className="flex space-x-2 justify-end">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleEditUser(user)}
+                                    >
+                                      <Edit className="h-4 w-4 mr-1" /> Modifica
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleDeleteUser(user.id)}
+                                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                    >
+                                      <Trash2 className="h-4 w-4 mr-1" /> Elimina
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          {/* Vista desktop per amministratori */}
+                          <div className="hidden sm:block overflow-x-auto">
                             <Table>
                               <TableHeader>
                                 <TableRow>
@@ -696,7 +852,6 @@ export default function UserAdminPage() {
                                         >
                                           <Edit className="h-4 w-4 mr-1" /> Modifica
                                         </Button>
-                                        {/* Aggiungiamo pulsante elimina anche per gli admin */}
                                         <Button
                                           variant="ghost"
                                           size="sm"

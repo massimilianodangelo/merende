@@ -84,15 +84,76 @@ export default function HomePage() {
     <div className="flex flex-col h-screen">
       {/* Header */}
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <h1 className="text-xl font-semibold text-gray-800">Distribuzione merende</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
+          <div className="flex items-center justify-between w-full sm:w-auto">
+            <div>
+              <h1 className="text-xl font-semibold text-gray-800">Distribuzione merende</h1>
+              <span className="text-xs sm:text-sm text-gray-500 block sm:hidden">
+                {user?.firstName} {user?.lastName} - {user?.classRoom}
+              </span>
+            </div>
+            
+            <div className="sm:hidden flex items-center space-x-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative sm:hidden"
+                onClick={() => setCartOpen(true)}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-primary rounded-full">
+                    {totalItems}
+                  </span>
+                )}
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 rounded-full">
+                    <div className="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center">
+                      <span>{getInitials(user?.firstName || '', user?.lastName || '')}</span>
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Il mio account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/my-orders")}>
+                    <FileText className="mr-2 h-4 w-4" />
+                    <span>I miei ordini</span>
+                  </DropdownMenuItem>
+                  {user?.isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate("/admin")}>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Pannello amministratore</span>
+                    </DropdownMenuItem>
+                  )}
+                  {user?.isUserAdmin && (
+                    <DropdownMenuItem onClick={() => navigate("/user-admin")}>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Gestione utenti</span>
+                    </DropdownMenuItem>
+                  )}
+                  {user?.isRepresentative && !user?.isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate("/representative")}>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Pannello rappresentante</span>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+          
+          <div className="hidden sm:flex items-center mt-2 sm:mt-0">
             <span className="ml-4 text-sm text-gray-500 hidden md:inline-block">
               Sistema di ordinazione merende
             </span>
-          </div>
-          
-          <div className="flex items-center">
             <span className="mr-4 text-sm font-medium text-gray-700 hidden md:inline-block">
               {user?.firstName} {user?.lastName} - {user?.classRoom}
             </span>
@@ -147,20 +208,20 @@ export default function HomePage() {
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-12">
-            <div className="flex">
+            <div className="flex overflow-x-auto w-full no-scrollbar">
               <Link href="/">
-                <a className="border-b-2 border-primary text-primary px-3 py-2 text-sm font-medium" aria-current="page">
+                <a className="border-b-2 border-primary text-primary px-3 py-2 text-sm font-medium whitespace-nowrap" aria-current="page">
                   Prodotti
                 </a>
               </Link>
               <Link href="/my-orders">
-                <a className="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 px-3 py-2 text-sm font-medium">
+                <a className="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 px-3 py-2 text-sm font-medium whitespace-nowrap">
                   I miei ordini
                 </a>
               </Link>
             </div>
             
-            <div className="flex items-center">
+            <div className="hidden sm:flex items-center">
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -184,28 +245,28 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Product filter */}
           <div className="mb-6">
-            <div className="mb-4 flex justify-between items-center">
+            <div className="mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
               <h2 className="text-lg font-medium text-gray-900">Prodotti disponibili</h2>
               
-              <div className="relative w-full max-w-xs">
+              <div className="relative w-full sm:max-w-xs">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input 
                   type="text" 
                   placeholder="Cerca prodotti..." 
-                  className="pl-9 pr-3"
+                  className="pl-9 pr-3 w-full"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
             
-            <div className="flex gap-2 overflow-x-auto pb-2 md:flex-wrap">
+            <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar md:flex-wrap">
               {Object.values(ProductCategories).map((category) => (
                 <Button
                   key={category}
                   variant={selectedCategory === category ? "default" : "outline"}
                   size="sm"
-                  className="rounded-full"
+                  className="rounded-full flex-shrink-0"
                   onClick={() => setSelectedCategory(category)}
                 >
                   {category}
@@ -235,9 +296,9 @@ export default function HomePage() {
       
       {/* Cart modal */}
       <Dialog open={cartOpen} onOpenChange={setCartOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="w-[95vw] max-w-md mx-auto rounded-lg">
           <DialogHeader>
-            <DialogTitle>Il tuo ordine</DialogTitle>
+            <DialogTitle className="text-center sm:text-left">Il tuo ordine</DialogTitle>
           </DialogHeader>
           <CartContents onClose={() => setCartOpen(false)} onOrderPlaced={handleOrderPlaced} />
         </DialogContent>
@@ -245,17 +306,17 @@ export default function HomePage() {
       
       {/* Order confirmation modal */}
       <Dialog open={orderConfirmation.open} onOpenChange={closeOrderConfirmation}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="w-[95vw] max-w-md mx-auto rounded-lg">
           <DialogHeader>
-            <DialogTitle>Ordine confermato!</DialogTitle>
+            <DialogTitle className="text-center sm:text-left">Ordine confermato!</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-gray-500 mb-4 text-center sm:text-left">
               Il tuo ordine è stato confermato. Puoi ritirarlo durante l'intervallo.
             </p>
             <div className="bg-green-50 p-4 rounded-md">
-              <div className="flex">
-                <div className="ml-3">
+              <div className="flex flex-col sm:flex-row">
+                <div className="text-center sm:text-left sm:ml-3">
                   <h3 className="text-sm font-medium text-green-800">Dettagli ordine</h3>
                   <div className="mt-2 text-sm text-green-700">
                     <p>Numero ordine: <span className="font-medium">#{orderConfirmation.orderId}</span></p>
@@ -264,8 +325,8 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <div className="flex justify-end">
-            <Button onClick={closeOrderConfirmation}>
+          <div className="flex justify-center sm:justify-end">
+            <Button onClick={closeOrderConfirmation} className="w-full sm:w-auto">
               Torna ai prodotti
             </Button>
           </div>

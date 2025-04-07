@@ -25,15 +25,15 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      <div className="p-4">
-        <div className="flex justify-between">
-          <h3 className="text-base font-medium text-gray-900">{product.name}</h3>
-          <p className="text-base font-medium text-primary">{formatCurrency(product.price)}</p>
+    <div className="bg-white rounded-lg shadow overflow-hidden h-full flex flex-col">
+      <div className="p-3 sm:p-4 flex-1 flex flex-col">
+        <div className="flex flex-wrap sm:flex-nowrap justify-between items-start gap-1">
+          <h3 className="text-base font-medium text-gray-900 truncate max-w-[70%]">{product.name}</h3>
+          <p className="text-base font-medium text-primary whitespace-nowrap">{formatCurrency(product.price)}</p>
         </div>
-        <p className="mt-1 text-sm text-gray-500 min-h-[40px]">{product.description}</p>
-        <div className="mt-4 flex justify-between items-end">
-          <span className={`text-xs font-medium ${product.available ? 'text-green-600' : 'text-red-600'}`}>
+        <p className="mt-1 text-sm text-gray-500 flex-1">{product.description}</p>
+        <div className="mt-4 flex flex-wrap sm:flex-nowrap justify-between items-center gap-2">
+          <span className={`text-xs font-medium whitespace-nowrap ${product.available ? 'text-green-600' : 'text-red-600'}`}>
             {product.available ? (
               <>
                 <CheckIcon className="inline-block h-3 w-3 mr-1" /> Disponibile
@@ -49,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
             size="sm" 
             onClick={handleAddToCart}
             disabled={!product.available}
-            className={`${isAdding ? 'bg-primary text-white' : ''} ${!product.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`${isAdding ? 'bg-primary text-white' : ''} ${!product.available ? 'opacity-50 cursor-not-allowed' : ''} w-full sm:w-auto mt-1 sm:mt-0`}
           >
             {isAdding ? (
               <>
