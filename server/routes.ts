@@ -623,6 +623,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Internal server error" });
     }
   });
+  
+  // Endpoint per promuovere gli studenti alla classe successiva
+  app.post("/api/admin/users/promote", async (req, res) => {
+    try {
+      // Controllo sicurezza
+      /*
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Controlla se l'utente è un amministratore di utenti
+      if (!req.user?.isUserAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      */
+      
+      console.log("POST /api/admin/users/promote - Promozione studenti iniziata");
+      
+      // Esegui la promozione degli studenti
+      const result = await storage.promoteStudents();
+      
+      console.log(`Promozione completata: ${result.updated} studenti aggiornati`);
+      console.log("Classi aggiornate:", result.classes);
+      
+      res.status(200).json({ 
+        message: `Promossi ${result.updated} studenti con successo`, 
+        updatedCount: result.updated,
+        classChanges: result.classes 
+      });
+    } catch (error) {
+      console.error("Error promoting students:", error);
+      res.status(500).json({ message: "Errore durante la promozione degli studenti" });
+    }
+  });
 
   // Create HTTP server
   const httpServer = createServer(app);

@@ -88,6 +88,7 @@ export interface IStorage {
   getAllUsers(): Promise<User[]>; // Per ottenere tutti gli utenti
   updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined>; // Per aggiornare i dati utente, inclusa la password
   deleteUser(id: number): Promise<boolean>; // Per eliminare un utente
+  promoteStudents(): Promise<{ updated: number, classes: { from: string, to: string }[] }>; // Per promuovere gli studenti alla classe successiva
   
   // Product operations
   getProducts(): Promise<Product[]>;
@@ -724,6 +725,52 @@ export class MemStorage implements IStorage {
       console.error("Errore nell'aggiornamento delle classi:", error);
       return this.availableClasses || [];
     }
+  }
+  
+  async promoteStudents(): Promise<{ updated: number, classes: { from: string, to: string }[] }> {
+    const updatedClasses: { from: string, to: string }[] = [];
+    let updatedCount = 0;
+    
+    // Ottiene tutti gli utenti
+    const allUsers = Array.from(this.users.values());
+    
+    // Filtra tutti gli studenti (escludendo gli amministratori)
+    const students = allUsers.filter(user => user.classRoom !== "Admin");
+    
+    for (const student of students) {
+      const className = student.classRoom;
+      
+      // Verifica se la classe ha un formato valido (es. 1A, 2B, etc.)
+      const match = className.match(/^(\d+)([A-Za-z]+)$/);
+      
+      if (match) {
+        const currentYear = parseInt(match[1], 10);
+        const section = match[2];
+        
+        // Crea la nuova classe incrementando l'anno
+        const newYear = currentYear + 1;
+        const newClassName = `${newYear}${section}`;
+        
+        // Aggiorna la classe dello studente
+        await this.updateUser(student.id, { classRoom: newClassName });
+        
+        updatedCount++;
+        
+        // Aggiungi questa modifica all'elenco
+        const update = { from: className, to: newClassName };
+        if (!updatedClasses.some(uc => uc.from === update.from && uc.to === update.to)) {
+          updatedClasses.push(update);
+        }
+      }
+    }
+    
+    // Salva i dati dopo aver aggiornato tutti gli studenti
+    this.saveData();
+    
+    return { 
+      updated: updatedCount, 
+      classes: updatedClasses 
+    };
   }
 }
 

@@ -63,6 +63,8 @@ import {
   Plus,
   X,
   ChevronDown,
+  GraduationCap,
+  Settings,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -316,10 +318,49 @@ export default function UserAdminPage() {
     },
   });
   
+  // Mutation per promuovere gli studenti di classe
+  const promoteStudentsMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/admin/users/promote");
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Studenti promossi",
+        description: `${data.updatedCount} studenti sono stati promossi alla classe successiva.`,
+      });
+      // Mostra le classi aggiornate
+      if (data.classChanges && data.classChanges.length > 0) {
+        const changesText = data.classChanges
+          .map((change: { from: string, to: string }) => `${change.from} → ${change.to}`)
+          .join(", ");
+        toast({
+          title: "Classi aggiornate",
+          description: changesText,
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Errore",
+        description: "Non è stato possibile promuovere gli studenti: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
   // Handler per eliminare tutti gli utenti non admin
   const handleDeleteAllNonAdminUsers = () => {
     if (window.confirm("ATTENZIONE: Stai per eliminare TUTTI gli utenti studenti e rappresentanti. Questa azione cancellerà anche i loro ordini e non può essere annullata. Sei sicuro di voler procedere?")) {
       deleteAllNonAdminUsersMutation.mutate();
+    }
+  };
+  
+  // Handler per promuovere gli studenti alla classe successiva
+  const handlePromoteStudents = () => {
+    if (window.confirm("Stai per aggiornare le classi di tutti gli studenti. Gli studenti saranno promossi alla classe successiva (es. da 2C a 3C). Vuoi procedere?")) {
+      promoteStudentsMutation.mutate();
     }
   };
   
@@ -456,6 +497,28 @@ export default function UserAdminPage() {
                   </Button>
                   {user?.isUserAdmin && (
                     <>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" className="flex items-center gap-2">
+                            <Settings className="h-4 w-4" />
+                            Azioni Avanzate
+                            <ChevronDown className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={handlePromoteStudents}>
+                            <GraduationCap className="mr-2 h-4 w-4" />
+                            <span>Promuovi Studenti</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            className="text-red-500 focus:text-red-500" 
+                            onClick={handleDeleteAllNonAdminUsers}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            <span>Elimina Tutti gli Studenti</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                       <Button 
                         onClick={() => setIsManageClassesOpen(true)} 
                         variant="outline"
