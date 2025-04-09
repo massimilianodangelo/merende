@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +15,8 @@ import { Loader2, Check, X, Package, Clock, RotateCcw, CheckCircle, Home } from 
 import { formatCurrency } from "@/lib/utils";
 import { OrderStatus } from "@shared/schema";
 import { Link } from "wouter";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 // Traduzioni degli stati degli ordini
 const orderStatusTranslations = {
@@ -82,6 +84,18 @@ export default function RepresentativePage() {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [selectedOrder, setSelectedOrder] = useState<OrderWithDetails | null>(null);
   const [orderDetailsOpen, setOrderDetailsOpen] = useState(false);
+  const [showOnlyToday, setShowOnlyToday] = useState<boolean>(true);
+  
+  // Funzione per verificare se un ordine è di oggi
+  const isOrderFromToday = useCallback((orderDate: string) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const orderDateObj = new Date(orderDate);
+    orderDateObj.setHours(0, 0, 0, 0);
+    
+    return orderDateObj.getTime() === today.getTime();
+  }, []);
 
   // Fetch degli ordini per la classe del rappresentante
   const { data: orders, isLoading, error } = useQuery({
@@ -152,7 +166,12 @@ export default function RepresentativePage() {
   }
 
   const productSummary: ProductSummary = processedOrders
-    .filter((order: OrderWithDetails) => order.status === OrderStatus.COMPLETED || order.status === OrderStatus.PROCESSING)
+    .filter((order: OrderWithDetails) => 
+      // Filtra per stato dell'ordine
+      (order.status === OrderStatus.COMPLETED || order.status === OrderStatus.PROCESSING) &&
+      // Filtra per data se showOnlyToday è attivo
+      (!showOnlyToday || isOrderFromToday(order.orderDate))
+    )
     .flatMap((order: OrderWithDetails) => order.items)
     .reduce((acc: ProductSummary, item: OrderItem) => {
       if (!item.product) return acc;
@@ -192,6 +211,16 @@ export default function RepresentativePage() {
         <CardDescription>
           Totale prodotti per gli ordini in lavorazione e completati
         </CardDescription>
+        <div className="flex items-center space-x-2 mt-2">
+          <Label htmlFor="show-only-today" className="text-sm">
+            Solo oggi
+          </Label>
+          <Switch
+            id="show-only-today"
+            checked={showOnlyToday}
+            onCheckedChange={setShowOnlyToday}
+          />
+        </div>
       </CardHeader>
       <CardContent>
         <Table>
@@ -276,7 +305,7 @@ export default function RepresentativePage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {selectedOrder?.items.map((item) => (
+              {selectedOrder?.items.map((item: any) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">
                     {item.product?.name}
@@ -310,7 +339,12 @@ export default function RepresentativePage() {
   // Componente per la lista degli ordini
   const OrdersList = ({ status }: { status: string }) => {
     // Assicurati che ordersByStatus contenga la proprietà status, se non c'è, inizializza come array vuoto
-    const filteredOrders = ordersByStatus[status] || [];
+    const baseOrders = ordersByStatus[status] || [];
+    
+    // Filtra per data se showOnlyToday è attivo
+    const filteredOrders = showOnlyToday 
+      ? baseOrders.filter((order: OrderWithDetails) => isOrderFromToday(order.orderDate))
+      : baseOrders;
     
     // Usiamo il valore sicuro per la traduzione
     const statusTranslation = Object.prototype.hasOwnProperty.call(orderStatusTranslations, status) 

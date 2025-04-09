@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Countdown } from "@/components/ui/countdown";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { 
   Table, 
   TableBody, 
@@ -61,6 +63,18 @@ type OrderWithItems = {
 export default function MyOrdersPage() {
   const { user, logoutMutation } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null);
+  const [showOnlyToday, setShowOnlyToday] = useState<boolean>(true);
+
+  // Funzione per verificare se un ordine è di oggi
+  const isOrderFromToday = useCallback((orderDate: string) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const orderDateObj = new Date(orderDate);
+    orderDateObj.setHours(0, 0, 0, 0);
+    
+    return orderDateObj.getTime() === today.getTime();
+  }, []);
 
   // Fetch orders
   const { data: orders, isLoading, isError, refetch } = useQuery<OrderWithItems[]>({
@@ -183,7 +197,19 @@ export default function MyOrdersPage() {
               {selectedOrder ? `Dettaglio ordine #${selectedOrder.id}` : "I miei ordini"}
             </h2>
             
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
+              {!selectedOrder && (
+                <div className="flex items-center space-x-2 mr-2">
+                  <Label htmlFor="show-only-today" className="text-sm">
+                    Solo oggi
+                  </Label>
+                  <Switch
+                    id="show-only-today"
+                    checked={showOnlyToday}
+                    onCheckedChange={setShowOnlyToday}
+                  />
+                </div>
+              )}
               {selectedOrder && (
                 <Button 
                   variant="outline" 
@@ -275,22 +301,24 @@ export default function MyOrdersPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {orders.map((order) => (
-                      <TableRow key={order.id}>
-                        <TableCell>{order.id}</TableCell>
-                        <TableCell>{formatDate(new Date(order.createdAt))}</TableCell>
-                        <TableCell>{getStatusBadge(order.status)}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(order.total)}</TableCell>
-                        <TableCell>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleOrderSelect(order)}
-                          >
-                            Dettagli
-                          </Button>
-                        </TableCell>
-                      </TableRow>
+                    {orders
+                      .filter(order => !showOnlyToday || isOrderFromToday(order.orderDate))
+                      .map((order) => (
+                        <TableRow key={order.id}>
+                          <TableCell>{order.id}</TableCell>
+                          <TableCell>{formatDate(new Date(order.createdAt))}</TableCell>
+                          <TableCell>{getStatusBadge(order.status)}</TableCell>
+                          <TableCell className="text-right">{formatCurrency(order.total)}</TableCell>
+                          <TableCell>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleOrderSelect(order)}
+                            >
+                              Dettagli
+                            </Button>
+                          </TableCell>
+                        </TableRow>
                     ))}
                   </TableBody>
                 </Table>
