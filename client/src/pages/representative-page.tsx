@@ -211,16 +211,6 @@ export default function RepresentativePage() {
         <CardDescription>
           Totale prodotti per gli ordini in lavorazione e completati
         </CardDescription>
-        <div className="flex items-center space-x-2 mt-2">
-          <Label htmlFor="show-only-today" className="text-sm">
-            Solo oggi
-          </Label>
-          <Switch
-            id="show-only-today"
-            checked={showOnlyToday}
-            onCheckedChange={setShowOnlyToday}
-          />
-        </div>
       </CardHeader>
       <CardContent>
         <Table>
@@ -440,6 +430,19 @@ export default function RepresentativePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="show-only-today" className="text-sm">
+                Mostra solo gli ordini di oggi
+              </Label>
+              <Switch
+                id="show-only-today"
+                checked={showOnlyToday}
+                onCheckedChange={setShowOnlyToday}
+              />
+            </div>
+          </div>
+          
           <Tabs defaultValue={OrderStatus.PENDING} className="w-full">
             <TabsList className="grid grid-cols-2 mb-6">
               <TabsTrigger value={OrderStatus.PENDING}>

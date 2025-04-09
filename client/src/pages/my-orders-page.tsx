@@ -201,7 +201,7 @@ export default function MyOrdersPage() {
               {!selectedOrder && (
                 <div className="flex items-center space-x-2 mr-2">
                   <Label htmlFor="show-only-today" className="text-sm">
-                    Solo oggi
+                    Mostra solo gli ordini di oggi
                   </Label>
                   <Switch
                     id="show-only-today"
