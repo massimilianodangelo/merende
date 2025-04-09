@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { getInitials, formatCurrency, formatDate, formatTime } from "@/lib/utils";
 import { 
   ShoppingCart, 
@@ -64,6 +64,7 @@ export default function MyOrdersPage() {
   const { user, logoutMutation } = useAuth();
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null);
   const [showOnlyToday, setShowOnlyToday] = useState<boolean>(true);
+  const [, navigate] = useLocation();
 
   // Funzione per verificare se un ordine è di oggi
   const isOrderFromToday = useCallback((orderDate: string) => {
@@ -140,11 +141,9 @@ export default function MyOrdersPage() {
                   <span>I miei ordini</span>
                 </DropdownMenuItem>
                 {user?.isRepresentative && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Pannello rappresentante</span>
-                    </Link>
+                  <DropdownMenuItem onClick={() => navigate("/admin")}>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Pannello rappresentante</span>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onClick={handleLogout}>
