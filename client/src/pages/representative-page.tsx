@@ -333,8 +333,8 @@ export default function RepresentativePage() {
     
     // Filtra per data se showOnlyToday è attivo
     const filteredOrders = showOnlyToday 
-      ? baseOrders.filter((order: OrderWithDetails) => isOrderFromToday(order.orderDate))
-      : baseOrders;
+      ? baseOrders.filter((order: OrderWithDetails) => isOrderFromToday(order.orderDate)).sort((a: OrderWithDetails, b: OrderWithDetails) => b.id - a.id)
+      : baseOrders.sort((a: OrderWithDetails, b: OrderWithDetails) => b.id - a.id);
     
     // Usiamo il valore sicuro per la traduzione
     const statusTranslation = Object.prototype.hasOwnProperty.call(orderStatusTranslations, status) 

@@ -510,6 +510,7 @@ export default function AdminPage() {
                                 const classRoom = order.user && order.user.classRoom ? order.user.classRoom : "";
                                 return classRoom && classRoom.trim() !== "" && classRoom !== "N/A";
                               })
+                              .sort((a, b) => b.id - a.id) // Ordina per ID in ordine discendente
                               .map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
@@ -585,6 +586,7 @@ export default function AdminPage() {
                                 const classRoom = order.user && order.user.classRoom ? order.user.classRoom : "";
                                 return classRoom && classRoom.trim() !== "" && classRoom !== "N/A";
                               })
+                              .sort((a, b) => b.id - a.id) // Ordina per ID in ordine discendente
                               .map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
@@ -642,6 +644,7 @@ export default function AdminPage() {
                                 const classRoom = order.user && order.user.classRoom ? order.user.classRoom : "";
                                 return classRoom && classRoom.trim() !== "" && classRoom !== "N/A";
                               })
+                              .sort((a, b) => b.id - a.id) // Ordina per ID in ordine discendente
                               .map(order => (
                               <TableRow key={order.id}>
                                 <TableCell className="font-medium">#{order.id}</TableCell>
