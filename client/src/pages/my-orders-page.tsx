@@ -141,7 +141,7 @@ export default function MyOrdersPage() {
                   <span>I miei ordini</span>
                 </DropdownMenuItem>
                 {user?.isRepresentative && (
-                  <DropdownMenuItem onClick={() => navigate("/admin")}>
+                  <DropdownMenuItem onClick={() => navigate("/representative")}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Pannello rappresentante</span>
                   </DropdownMenuItem>
@@ -302,6 +302,7 @@ export default function MyOrdersPage() {
                   <TableBody>
                     {orders
                       .filter(order => !showOnlyToday || isOrderFromToday(order.orderDate))
+                      .sort((a, b) => b.id - a.id) // Ordina per ID in ordine discendente
                       .map((order) => (
                         <TableRow key={order.id}>
                           <TableCell>{order.id}</TableCell>
