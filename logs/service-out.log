@@ -1,0 +1,157 @@
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Dati caricati dal file di storage
+Server in ascolto sulla porta 5000
+Terminare il processo batch (S/N)? Dati caricati dal file di storage
+Server in ascolto sulla porta 5000
+GET /api/user - Authentication status: false
+11:41:12 PM [express] GET /api/user 401 in 5ms
+11:41:12 PM [express] GET /api/admin/classes 200 in 3ms :: ["1A","1B","1C","1D","1E","1F","1G","1H","…
+Comparing password for admin check.
+Normal user login attempt, using scrypt
+User logged in successfully: massimiliano@gmail.com isUserAdmin: false
+11:41:31 PM [express] POST /api/login 200 in 151ms :: {"id":4,"username":"massimiliano@gmail.com","fi…
+Deserializing user: 4 [massimiliano@gmail.com]
+11:41:31 PM [express] GET /api/products 200 in 7ms :: [{"name":"TRAMEZZINO TONNO E POMODORO","descrip…
+Deserializing user: 4 [massimiliano@gmail.com]
+GET /api/orders - Authentication status: true User: 4
+11:41:38 PM [express] GET /api/orders 200 in 6ms :: [{"userId":4,"status":"cancelled","total":5,"orde…
+Deserializing user: 4 [massimiliano@gmail.com]
+11:41:45 PM [express] POST /api/logout 200 in 4ms
+Comparing password for admin check.
+Normal user login attempt, using scrypt
+User logged in successfully: simone@gmail.com isUserAdmin: false
+11:41:56 PM [express] POST /api/login 200 in 106ms :: {"id":3,"username":"simone@gmail.com","firstNam…
+Deserializing user: 3 [simone@gmail.com]
+GET /api/orders - Authentication status: true User: 3
+11:42:05 PM [express] GET /api/orders 200 in 3ms :: [{"userId":3,"status":"completed","total":11,"ord…
+Deserializing user: 3 [simone@gmail.com]
+GET /api/admin/orders/class/:classroom - Authentication status: true - User: {
+  firstName: 'simone',
+  lastName: 'simone',
+  classRoom: '1A',
+  username: 'simone@gmail.com',
+  email: 'simone@gmail.com',
+  password: '92c7cc394c480d886876bc23b23aa3bab750d14aadc480b77a276a53c0705b3eaf175261e73d99b60814de5affd3ad4f6a744db42110680709f02cd331d6d53f.3214eb85422b0e8ef782db2dafb1ae1d',
+  isRepresentative: true,
+  id: 3,
+  isAdmin: false,
+  isUserAdmin: false
+} - Classroom: 1A
+Classe decodificata: 1A
+getOrdersByClass chiamato con classe: "1A"
+Verificando ordine 16, utente: simone simone, classe utente: "1A"
+Ordine 16 aggiunto ai risultati
+Verificando ordine 17, utente: massimiliano d'angelo, classe utente: "1A"
+Ordine 17 aggiunto ai risultati
+Verificando ordine 18, utente: massimiliano d'angelo, classe utente: "1A"
+Ordine 18 aggiunto ai risultati
+getOrdersByClass: trovati 3 ordini per la classe 1A
+Ottenuti 3 ordini per la classe 1A
+Inviati 3 ordini completi per la classe 1A
+11:42:12 PM [express] GET /api/admin/orders/class/1A 200 in 6ms :: [{"userId":3,"status":"completed",…
+Deserializing user: 3 [simone@gmail.com]
+11:42:12 PM [express] GET /api/products 304 in 4ms :: [{"name":"TRAMEZZINO TONNO E POMODORO","descrip…
+GET /api/user - Authentication status: false
+11:42:31 PM [express] GET /api/user 401 in 2ms
+11:42:31 PM [express] GET /api/admin/classes 304 in 2ms :: ["1A","1B","1C","1D","1E","1F","1G","1H","…
+Comparing password for admin check.
+Normal user login attempt, using scrypt
+User logged in successfully: prova@amministratore.it isUserAdmin: false
+11:42:43 PM [express] POST /api/login 200 in 109ms :: {"id":1,"username":"prova@amministratore.it","f…
+Deserializing user: 1 [prova@amministratore.it]
+11:42:43 PM [express] GET /api/products 304 in 4ms :: [{"name":"TRAMEZZINO TONNO E POMODORO","descrip…
+Deserializing user: 1 [prova@amministratore.it]
+GET /api/admin/orders - Authentication status: true - User: {
+  username: 'prova@amministratore.it',
+  password: '2d836d0159982302aeb92485af462eb7fdd8c0d46cbd40f65437d020e4223d4716199f69b0c3d3b3ad2a5262ba183e806a1fd5d61740ab4fd479be87c286e306.648e1aedc9cc3f1c7e2319d2a8a6f5d0',
+  firstName: 'Prova',
+  lastName: 'Ordini',
+  classRoom: 'Admin',
+  email: 'prova@amministratore.it',
+  isRepresentative: false,
+  isAdmin: true,
+  isUserAdmin: false,
+  id: 1
+}
+Ottenuti 3 ordini totali per l'amministratore
+Inviati 3 ordini completi all'amministratore
+11:42:43 PM [express] GET /api/admin/orders 304 in 4ms :: [{"userId":3,"status":"completed","total":1…
+Deserializing user: 1 [prova@amministratore.it]
+Deserializing user: 1 [prova@amministratore.it]
+11:42:56 PM [express] POST /api/logout 200 in 18ms
+Comparing password for admin check.
+Normal user login attempt, using scrypt
+User logged in successfully: gestione@amministratore.it isUserAdmin: true
+11:43:07 PM [express] POST /api/login 200 in 139ms :: {"id":2,"username":"gestione@amministratore.it"…
+Deserializing user: 2 [gestione@amministratore.it]
+GET /api/admin/users - Authentication status: true
+11:43:07 PM [express] GET /api/admin/users 200 in 8ms :: [{"username":"gestione@amministratore.it","f…
+Deserializing user: 2 [gestione@amministratore.it]
+Deserializing user: 2 [gestione@amministratore.it]
+POST /api/admin/users/promote - Promozione studenti iniziata
+Dati salvati con chiave: appData
+Dati salvati con chiave: appData
+Dati salvati con chiave: appData
+Promozione completata: 2 studenti aggiornati
+Classi aggiornate: [ { from: '1A', to: '2A' } ]
+Studenti eliminati (classe 5): 0
+11:43:22 PM [express] POST /api/admin/users/promote 200 in 22ms :: {"message":"Promossi 2 studenti co…
+Deserializing user: 2 [gestione@amministratore.it]
+GET /api/admin/users - Authentication status: true
+11:43:22 PM [express] GET /api/admin/users 200 in 4ms :: [{"username":"gestione@amministratore.it","f…
+Deserializing user: 2 [gestione@amministratore.it]
+Dati salvati con chiave: appData
+11:43:25 PM [express] PATCH /api/admin/users/3 200 in 5ms :: {"firstName":"simone","lastName":"simone…
+Deserializing user: 2 [gestione@amministratore.it]
+GET /api/admin/users - Authentication status: true
+11:43:25 PM [express] GET /api/admin/users 200 in 3ms :: [{"username":"gestione@amministratore.it","f…
+Deserializing user: 2 [gestione@amministratore.it]
+Dati salvati con chiave: appData
+11:43:28 PM [express] PATCH /api/admin/users/4 200 in 7ms :: {"firstName":"massimiliano","lastName":"…
+Deserializing user: 2 [gestione@amministratore.it]
+GET /api/admin/users - Authentication status: true
+11:43:28 PM [express] GET /api/admin/users 200 in 3ms :: [{"username":"gestione@amministratore.it","f…
+Deserializing user: 2 [gestione@amministratore.it]
+11:43:30 PM [express] POST /api/logout 200 in 4ms

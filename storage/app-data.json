@@ -34,104 +34,29 @@
       [
         3,
         {
-          "username": "dsfcd@gmail.com",
-          "password": "364b5790078d56c5a3a5b68ed89194821d64e9eb3fc5db8f66330389e86b32041791698139a34efa01a398da2caac7a8bc46b37a2c21860a6f7912f229badff6.3ea35f25918221145b71899bbf25558a",
-          "firstName": "fdsdas",
-          "lastName": "dsf",
-          "classRoom": "3G",
-          "email": "dsfcd@gmail.com",
-          "isRepresentative": false,
+          "firstName": "simone",
+          "lastName": "simone",
+          "classRoom": "1A",
+          "username": "simone@gmail.com",
+          "email": "simone@gmail.com",
+          "password": "92c7cc394c480d886876bc23b23aa3bab750d14aadc480b77a276a53c0705b3eaf175261e73d99b60814de5affd3ad4f6a744db42110680709f02cd331d6d53f.3214eb85422b0e8ef782db2dafb1ae1d",
+          "isRepresentative": true,
+          "id": 3,
           "isAdmin": false,
-          "isUserAdmin": false,
-          "id": 3
+          "isUserAdmin": false
         }
       ],
       [
         4,
         {
-          "username": "ghfghghjgjyt@gmail.com",
-          "password": "2f93c9e48831838a6e07f09fc640463954c12440d93c51c10923866a25ac6eb3e86988cde6599e7d6764a13dff0a754152fee3e4fe56cf3e87b8a32ae63159b4.87e4d6d8d330c33a94c1cc6b931812ba",
-          "firstName": "sdfgdrgrrt",
-          "lastName": "dsadad",
-          "classRoom": "4D",
-          "email": "ghfghghjgjyt@gmail.com",
-          "isRepresentative": false,
-          "isAdmin": false,
-          "isUserAdmin": false,
-          "id": 4
-        }
-      ],
-      [
-        5,
-        {
-          "username": "dsftrg@gmail.com",
-          "password": "ecaaaddda53efbdae943408105a55612ae44d9036315775f10db79da7a421429e2f9868a5706913588e313da9b31331b45cc4a70b0003da7b3ad46c0846d9f52.9bdfc984a10faf25babab0f5bac6d74a",
-          "firstName": "fegrth",
-          "lastName": "htyjhyui",
-          "classRoom": "6F",
-          "email": "dsftrg@gmail.com",
-          "isRepresentative": false,
-          "isAdmin": false,
-          "isUserAdmin": false,
-          "id": 5
-        }
-      ],
-      [
-        6,
-        {
-          "firstName": "rtrtrty",
-          "lastName": "trtrr",
-          "classRoom": "1B",
-          "username": "ffdfgfd@gmail.com",
-          "email": "ffdfgfd@gmail.com",
-          "password": "ea6bc07242f2a8ca2360902d4189a8a72993699ed8934da7dd05d3ea3808b417cf3e946111572b687b0ca0357ad68db9b707aa1e8377b152147489b5aac9d769.56baaa1a697368395215642302306348",
-          "isRepresentative": false,
-          "id": 6,
-          "isAdmin": false,
-          "isUserAdmin": false
-        }
-      ],
-      [
-        7,
-        {
-          "firstName": "ddfgd",
-          "lastName": "dfgd",
-          "classRoom": "1B",
-          "username": "dsgdf@gmail.com",
-          "email": "dsgdf@gmail.com",
-          "password": "0e768edffe47203ac5faf10c10f7cae9ce49a49a940e628f8f12adec3a4466daa80fce6fd400168e0c9d016bcbbf9bf4175a1ccdabc3f033793f9c21e645a87c.c711b492dae54be179b38b37f67e2604",
-          "isRepresentative": false,
-          "id": 7,
-          "isAdmin": false,
-          "isUserAdmin": false
-        }
-      ],
-      [
-        8,
-        {
           "firstName": "massimiliano",
           "lastName": "d'angelo",
-          "classRoom": "2C",
-          "username": "fefsd@gmail.com",
-          "email": "fefsd@gmail.com",
-          "password": "c23c1801e592d61ad89e2f320195f61e055f091a98f3a9ace1c315985c39d6b8a20e1b9032cbb4cf1b1919c8aa3964e581006b634f14cc38d2e758c35b277794.6a92e0c1561c4d68cccd2e5871dab186",
-          "isRepresentative": true,
-          "id": 8,
-          "isAdmin": false,
-          "isUserAdmin": false
-        }
-      ],
-      [
-        9,
-        {
-          "firstName": "fdfd",
-          "lastName": "gfdgf",
-          "classRoom": "2B",
-          "username": "massi@gmail.com",
-          "email": "massi@gmail.com",
-          "password": "de1d2a4c20fa0ac70ace4e8acc130495cb42faf8cfe0045ae2cd2c64cfd16bba9ef0c76911370094a421db2fae1355589d962a49b0b4858c91c08ebdd921487b.6f873c159ebf4502f05210bc2c36db7e",
-          "isRepresentative": true,
-          "id": 9,
+          "classRoom": "1A",
+          "username": "massimiliano@gmail.com",
+          "email": "massimiliano@gmail.com",
+          "password": "e22db02cfb7ae46b5b5077e243853d4428aa174091249308d282c4fc154ed114bf9c8f18bd6b1ea15ed44130998b8c74278e6b7a5ad2e12c75a831cbcdd690c1.8b7d5981d375deb8fb9f84f28bfd9a15",
+          "isRepresentative": false,
+          "id": 4,
           "isAdmin": false,
           "isUserAdmin": false
         }
@@ -284,55 +209,182 @@
     ],
     "orders": [
       [
-        14,
+        16,
         {
-          "userId": 8,
+          "userId": 3,
           "status": "completed",
-          "total": 2,
-          "orderDate": "2025-04-07T20:06:51.554Z",
-          "id": 14,
-          "createdAt": "2025-04-07T20:06:51.722Z"
+          "total": 11,
+          "orderDate": "2025-04-09T19:19:57.895Z",
+          "id": 16,
+          "createdAt": "2025-04-09T19:19:57.117Z"
         }
       ],
       [
-        15,
+        17,
         {
-          "userId": 9,
+          "userId": 4,
+          "status": "cancelled",
+          "total": 5,
+          "orderDate": "2025-05-09T20:06:44.891Z",
+          "id": 17,
+          "createdAt": "2025-05-09T20:06:44.497Z"
+        }
+      ],
+      [
+        18,
+        {
+          "userId": 4,
           "status": "completed",
-          "total": 2,
-          "orderDate": "2025-04-07T20:11:42.966Z",
-          "id": 15,
-          "createdAt": "2025-04-07T20:11:43.149Z"
+          "total": 13,
+          "orderDate": "2025-05-09T20:08:26.549Z",
+          "id": 18,
+          "createdAt": "2025-05-09T20:08:26.110Z"
         }
       ]
     ],
     "orderItems": [
       [
-        22,
+        24,
         {
-          "orderId": 14,
-          "productId": 1,
+          "orderId": 16,
+          "productId": 3,
           "quantity": 1,
           "price": 2,
-          "id": 22
+          "id": 24
         }
       ],
       [
-        23,
+        25,
         {
-          "orderId": 15,
+          "orderId": 16,
+          "productId": 2,
+          "quantity": 1,
+          "price": 2,
+          "id": 25
+        }
+      ],
+      [
+        26,
+        {
+          "orderId": 16,
+          "productId": 6,
+          "quantity": 1,
+          "price": 2.5,
+          "id": 26
+        }
+      ],
+      [
+        27,
+        {
+          "orderId": 16,
+          "productId": 7,
+          "quantity": 1,
+          "price": 2.5,
+          "id": 27
+        }
+      ],
+      [
+        28,
+        {
+          "orderId": 16,
+          "productId": 5,
+          "quantity": 1,
+          "price": 2,
+          "id": 28
+        }
+      ],
+      [
+        29,
+        {
+          "orderId": 17,
+          "productId": 6,
+          "quantity": 1,
+          "price": 2.5,
+          "id": 29
+        }
+      ],
+      [
+        30,
+        {
+          "orderId": 17,
+          "productId": 7,
+          "quantity": 1,
+          "price": 2.5,
+          "id": 30
+        }
+      ],
+      [
+        31,
+        {
+          "orderId": 18,
           "productId": 1,
           "quantity": 1,
           "price": 2,
-          "id": 23
+          "id": 31
+        }
+      ],
+      [
+        32,
+        {
+          "orderId": 18,
+          "productId": 11,
+          "quantity": 1,
+          "price": 1,
+          "id": 32
+        }
+      ],
+      [
+        33,
+        {
+          "orderId": 18,
+          "productId": 10,
+          "quantity": 1,
+          "price": 2.5,
+          "id": 33
+        }
+      ],
+      [
+        34,
+        {
+          "orderId": 18,
+          "productId": 5,
+          "quantity": 1,
+          "price": 2,
+          "id": 34
+        }
+      ],
+      [
+        35,
+        {
+          "orderId": 18,
+          "productId": 9,
+          "quantity": 1,
+          "price": 2.5,
+          "id": 35
+        }
+      ],
+      [
+        36,
+        {
+          "orderId": 18,
+          "productId": 13,
+          "quantity": 2,
+          "price": 1.5,
+          "id": 36
         }
       ]
     ],
     "userId": 23,
     "productId": 14,
-    "orderId": 16,
-    "orderItemId": 24,
-    "deletedUserIds": []
+    "orderId": 19,
+    "orderItemId": 37,
+    "deletedUserIds": [
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
   },
   "availableClasses": [
     "1A",

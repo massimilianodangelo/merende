@@ -60,12 +60,7 @@ app.use((req, res, next) => {
 
   // In Render, utilizziamo la porta fornita dall'ambiente
   // In locale, utilizziamo la porta 5000
-  const port = process.env.PORT || 5000;
-  server.listen({
-    port: Number(port),
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
-})();
+  const PORT = process.env.PORT || 5000;
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server in ascolto sulla porta ${PORT}`);
+});
